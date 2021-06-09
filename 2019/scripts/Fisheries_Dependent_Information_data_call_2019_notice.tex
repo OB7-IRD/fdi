@@ -1,0 +1,1045 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Fisheries Dependent Information data call 2019},
+            pdfauthor={Mathieu Depetris},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Fisheries Dependent Information data call 2019}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+  \subtitle{Notice explicative}
+  \author{Mathieu Depetris}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{13/08/2019}
+
+\usepackage{color}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\hypertarget{introduction-et-presentation}{%
+\section{Introduction et
+présentation}\label{introduction-et-presentation}}
+
+L'appel à données ``Fisheries Dependent Information'' (FDI ou New-FDI) a
+pour but l'incrémentation d'une base de données, afin d'apporter un
+support dans la gestion et la coordination des pêcheries. En 2018, un
+appel à données similaire avait été lancé par la Commission Européenne
+(via le biais du STECF, ``Scientific, Technical and Economic Committee
+for Fisheries''). Chaque année, un groupe de travail apporte des
+modifications à ce format, en rapport avec les retours d'expériences des
+années précédentes. Actuellement, le format n'est pas validé et des
+modifications sont encore apportées chaque année. C'est d'ailleurs pour
+cette raison que les données des années déjà récupérées précédemment
+sont encore demandées durant l'appel à données en cours. A terme,
+uniquement la dernière année sera intégrée avec une vocation à recréer
+des séries historiques (et donc à fournir des données anciennes). A
+titre d'information, le prochain groupe de travail sur cet appel à
+données (EWG 19-11) aura lieu le 16-20 septembre 2019.
+
+Concernant l'appel à données de 2019, la Commission Européenne demande
+aux etats membres de fourir des données en rapport avec les années 2015,
+2016, 2017 et 2018. Toutes les informations et les détails sont
+disponibles sur la plateforme de l'appel à données à l'adresse suivante
+\url{https://datacollection.jrc.ec.europa.eu/dc/fdi}. Le format et la
+spécification des données sont décrits dans le document ``Annex 1''
+disponible sur la plateforme.
+
+\hypertarget{explication-du-script-dimportations-et-de-manipulations-des-donnees}{%
+\section{Explication du script d'importations et de manipulations des
+données}\label{explication-du-script-dimportations-et-de-manipulations-des-donnees}}
+
+L'objectif de cette section est d'apporte une aide dans la compréhension
+des procédures ayant permis la livraison des données. Il est important
+de noté de certains points (marqué dans le document par
+``\textbf{\(\color{red}{\text{Point de vigilance}}\)}'') devront
+presenter une attention tout particulière pour l'appel à données de
+l'année prochaine. Ces points peuvent porter des processus à améliorer,
+à corriger ou à verifier.
+
+\hypertarget{initialisation-des-packages-r-et-de-lenvironnement-de-travail}{%
+\subsection{Initialisation des packages R et de l'environnement de
+travail}\label{initialisation-des-packages-r-et-de-lenvironnement-de-travail}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Setup ----}
+\KeywordTok{library}\NormalTok{(devtools)}
+\KeywordTok{install_github}\NormalTok{(}\StringTok{"https://github.com/OB7-IRD/furdeb"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(furdeb)}
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(RPostgreSQL)}
+\end{Highlighting}
+\end{Shaded}
+
+Le package furdeb (FUnctions for R DEvelopment and Beyond!) regroupe des
+fonctions diverses utilisables sous R. Ce package est en accès libre et
+disponible à l'adresse suivante :
+\url{https://github.com/OB7-IRD/furdeb}.
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : il est conseillé
+de mettre à jour les packages précédemment cités (notamment tidyverse)
+afin de bénéficier des dernières versions en vigueur. A titre d'exemple,
+il a été noté une instabilité avec certaines versions antérieures du
+package ``dyplr'' (chargé avec la librairie ``tidyverse'') s'il n'était
+pas mise à jour. Par ailleurs, il faut toujours vérifier que le package
+``furdeb'' ne dispose pas d'une version plus récente disponible.
+L'utilisation de la fonction ``install.github'' devrait automatiquement
+lancer une mise à jour si elle est disponible.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{config_file <-}\StringTok{ }\KeywordTok{configuration_file}\NormalTok{(}\DataTypeTok{new_configtype =}\NormalTok{ F, }
+    \DataTypeTok{path_configtype =} \StringTok{"...}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{configfile_fdi2019.csv"}\NormalTok{)}
+
+\NormalTok{fao_area <-}\StringTok{ }\NormalTok{rgdal}\OperatorTok{::}\KeywordTok{readOGR}\NormalTok{(}\DataTypeTok{dsn =} \KeywordTok{system.file}\NormalTok{(}\StringTok{"fao_area"}\NormalTok{, }
+    \StringTok{"FAO_AREAS.shp"}\NormalTok{, }\DataTypeTok{package =} \StringTok{"furdeb"}\NormalTok{), }
+    \DataTypeTok{verbose =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : l'utilisation de
+la fonction ``configuration\_file'' (issu du package ``furdeb'') permet
+de créer un fichier de configuration regroupant toutes les informations
+nécessaires à charger l'environnement de travail (emplacement de java et
+mémoire allouée à celui-ci, localisation du répertoire de travail,
+identifiants permettant de se connecter aux bases de données, \ldots{}).
+Lors du premier lancement, la création de se fichier de configuration se
+fait à l'aide la fonction ``configuration\_file()''. Regarder l'aide de
+la fonction (?configuration\_file) pour en savoir plus.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Databases connections ----}
+\NormalTok{balbaya_con <-}\StringTok{ }\KeywordTok{db_connection}\NormalTok{(}\DataTypeTok{db_user =}\NormalTok{ config_file[[}\StringTok{"balbaya_user"}\NormalTok{]], }
+    \DataTypeTok{db_password =}\NormalTok{ config_file[[}\StringTok{"balbaya_password"}\NormalTok{]], }
+    \DataTypeTok{db_dbname =}\NormalTok{ config_file[[}\StringTok{"balbaya_dbname"}\NormalTok{]], }
+    \DataTypeTok{db_host =}\NormalTok{ config_file[[}\StringTok{"balbaya_host"}\NormalTok{]], }
+    \DataTypeTok{db_port =}\NormalTok{ config_file[[}\StringTok{"balbaya_port"}\NormalTok{]])}
+
+\NormalTok{sardara_con <-}\StringTok{ }\KeywordTok{db_connection}\NormalTok{(}\DataTypeTok{db_user =}\NormalTok{ config_file[[}\StringTok{"sardara_user"}\NormalTok{]], }
+    \DataTypeTok{db_password =}\NormalTok{ config_file[[}\StringTok{"sardara_password"}\NormalTok{]], }
+    \DataTypeTok{db_dbname =}\NormalTok{ config_file[[}\StringTok{"sardara_dbname"}\NormalTok{]], }
+    \DataTypeTok{db_host =}\NormalTok{ config_file[[}\StringTok{"sardara_host"}\NormalTok{]], }
+    \DataTypeTok{db_port =}\NormalTok{ config_file[[}\StringTok{"sardara_port"}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : Il est nécessaire
+de lancer le script dans l'ordre d'appartion des commandes. Certaines
+tables ont besoin des sorties précédentes pour être crées.
+
+\hypertarget{table-a-catch-summary}{%
+\subsection{Table A: Catch summary}\label{table-a-catch-summary}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{balbaya_landing_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"balbaya_landing.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }
+    \DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+
+\NormalTok{balbaya_landing <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(balbaya_con, }
+\NormalTok{    balbaya_landing_query)}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\OtherTok{NULL}
+\ControlFlowTok{for}\NormalTok{ (file_name }\ControlFlowTok{in} \KeywordTok{list.files}\NormalTok{(}\DataTypeTok{path =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"work_path"}\NormalTok{]], }
+    \StringTok{"3-Data}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{by_catch"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{))) \{}
+\NormalTok{    observe_bycatch <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(observe_bycatch, }
+        \KeywordTok{read.csv2}\NormalTok{(}\KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"work_path"}\NormalTok{]], }
+            \StringTok{"3-Data}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{by_catch"}\NormalTok{, file_name, }
+            \DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }\DataTypeTok{stringsAsFactors =} \OtherTok{FALSE}\NormalTok{))}
+\NormalTok{\}}
+\KeywordTok{rm}\NormalTok{(file_name)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : Cette année, les
+données provenant de la base ObServe ont été récupéré par Philippe S.
+via des fichiers csv (en rapport avec les appels à données fournis aux
+ORGPs et surtout afin d'appliquer les mêmes processus de manipulation de
+données). Pour l'année suivant, il est vivement recommandé de récupérer
+les données brutes directement depuis la base de données ObServe et de
+retracer et documenter les manipulations effectuées sur les données.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# By-catch design}
+\NormalTok{observe_bycatch <-}\StringTok{ }\KeywordTok{cwp_to_center}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ observe_bycatch, }
+    \DataTypeTok{cwp_name =} \StringTok{"cwp11"}\NormalTok{, }\DataTypeTok{cwp_length =} \DecValTok{1}\NormalTok{)}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\KeywordTok{fao_area_overlay}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ observe_bycatch, }
+    \DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{)}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\KeywordTok{fao_area_overlay_unassociated}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ observe_bycatch[}\KeywordTok{is.na}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ], }\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =}\NormalTok{ f_area_near, }
+    \DataTypeTok{f_subarea =}\NormalTok{ f_subarea_near, }\DataTypeTok{f_division =}\NormalTok{ f_division_near) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{f_area_near, }\OperatorTok{-}\NormalTok{f_subarea_near, }
+        \OperatorTok{-}\NormalTok{f_division_near) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rbind}\NormalTok{(observe_bycatch[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ])}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(observe_bycatch[observe_bycatch}\OperatorTok{$}\NormalTok{f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "far_away"}\NormalTok{, ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{observe_bycatch_fao_area <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(observe_bycatch[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_division_final =} \KeywordTok{ifelse}\NormalTok{(f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34.2"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{, f_division), }\DataTypeTok{f_subarea_final =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, f_division_final, f_subarea), }\DataTypeTok{eez_indicator =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{%in%}\StringTok{ }
+\StringTok{    }\KeywordTok{c}\NormalTok{(}\StringTok{"41"}\NormalTok{, }\StringTok{"47"}\NormalTok{, }\StringTok{"51"}\NormalTok{, }\StringTok{"57"}\NormalTok{), }\StringTok{"NA"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{==}\StringTok{ "34.1.1"}\NormalTok{, }
+    \StringTok{"COAST"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{%in%}\StringTok{ }
+\StringTok{        }\KeywordTok{c}\NormalTok{(}\StringTok{"34.1.2"}\NormalTok{, }\StringTok{"34.1.3"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{), }
+        \StringTok{"RFMO"}\NormalTok{, }\StringTok{"NA"}\NormalTok{)), }\StringTok{"eez_not_defined"}\NormalTok{)))}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(observe_bycatch_fao_area[observe_bycatch_fao_area}\OperatorTok{$}\NormalTok{eez_indicator }\OperatorTok{==}\StringTok{ }
+\StringTok{    "eez_not_defined"}\NormalTok{, ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\NormalTok{observe_bycatch }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(observe_bycatch_fao_area, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sub_region =}\NormalTok{ f_subarea_final, }
+        \DataTypeTok{country =} \StringTok{"FRA"}\NormalTok{, }\DataTypeTok{vessel_length =} \StringTok{"VL40XX"}\NormalTok{, }
+        \DataTypeTok{fishing_tech =} \StringTok{"PS"}\NormalTok{, }\DataTypeTok{gear_type =} \StringTok{"PS"}\NormalTok{, }
+        \DataTypeTok{target_assemblage =} \StringTok{"LPF"}\NormalTok{, }\DataTypeTok{mesh_size_range =} \StringTok{"NK"}\NormalTok{, }
+        \DataTypeTok{metier =} \StringTok{"PS_LPF_0_0_0"}\NormalTok{, }\DataTypeTok{supra_region =} \StringTok{"OFR"}\NormalTok{, }
+        \DataTypeTok{geo_indicator =} \StringTok{"IWE"}\NormalTok{, }\DataTypeTok{specon_tech =} \StringTok{"NA"}\NormalTok{, }
+        \DataTypeTok{deep =} \StringTok{"NA"}\NormalTok{, }\DataTypeTok{species =} \KeywordTok{as.character}\NormalTok{(fao_code), }
+        \DataTypeTok{retained_tons =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(retained_tons), }
+            \DecValTok{0}\NormalTok{, retained_tons))}
+
+\NormalTok{observe_bycatch_retained <-}\StringTok{ }\NormalTok{observe_bycatch[observe_bycatch}\OperatorTok{$}\NormalTok{retained_tons }\OperatorTok{!=}\StringTok{ }
+\StringTok{    }\DecValTok{0}\NormalTok{, ]}
+
+\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ observe_bycatch}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"[^_]*"}\NormalTok{))}
+\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ observe_bycatch}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"(?<=_)}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{w+"}\NormalTok{))}
+\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{, }
+\NormalTok{    observe_bycatch}\OperatorTok{$}\NormalTok{school_type, }\DataTypeTok{sep =} \StringTok{"-"}\NormalTok{)}
+\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{, }
+\NormalTok{    observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+
+\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{domain_discards <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{country, }
+\NormalTok{    observe_bycatch}\OperatorTok{$}\NormalTok{quarter, observe_bycatch}\OperatorTok{$}\NormalTok{sub_region, }
+\NormalTok{    observe_bycatch}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{, observe_bycatch}\OperatorTok{$}\NormalTok{vessel_length, }
+\NormalTok{    observe_bycatch}\OperatorTok{$}\NormalTok{species, }\StringTok{"NA"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\KeywordTok{select}\NormalTok{(}\DataTypeTok{.data =}\NormalTok{ observe_bycatch, }
+    \OperatorTok{-}\NormalTok{cwp, }\OperatorTok{-}\NormalTok{quadrat, }\OperatorTok{-}\NormalTok{latitude_dec, }\OperatorTok{-}\NormalTok{longitude_dec, }
+    \OperatorTok{-}\NormalTok{f_area, }\OperatorTok{-}\NormalTok{f_subarea, }\OperatorTok{-}\NormalTok{f_division, }\OperatorTok{-}\NormalTok{metier_}\DecValTok{1}\NormalTok{, }
+    \OperatorTok{-}\NormalTok{metier_}\DecValTok{2}\NormalTok{, }\OperatorTok{-}\NormalTok{metier_}\DecValTok{3}\NormalTok{, }\OperatorTok{-}\NormalTok{metier_}\DecValTok{4}\NormalTok{, }\OperatorTok{-}\NormalTok{fao_code) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{discards =}\NormalTok{ discarded_tons) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{fishing_mode =} \KeywordTok{as.character}\NormalTok{(school_type)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(country, year, quarter, vessel_length, }
+\NormalTok{        fishing_tech, gear_type, target_assemblage, }
+\NormalTok{        mesh_size_range, metier, fishing_mode, }
+\NormalTok{        domain_discards, supra_region, sub_region, }
+\NormalTok{        eez_indicator, geo_indicator, specon_tech, }
+\NormalTok{        deep, species) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{retained_tons =} \KeywordTok{sum}\NormalTok{(retained_tons), }
+    \DataTypeTok{discards =} \KeywordTok{sum}\NormalTok{(discards)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{observe_bycatch <-}\StringTok{ }\NormalTok{observe_bycatch[}\OperatorTok{!}\NormalTok{(observe_bycatch}\OperatorTok{$}\NormalTok{retained_tons }\OperatorTok{==}\StringTok{ }
+\StringTok{    }\DecValTok{0} \OperatorTok{&}\StringTok{ }\NormalTok{observe_bycatch}\OperatorTok{$}\NormalTok{discards }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{), ]}
+
+\CommentTok{# Landings design}
+\NormalTok{balbaya_landing <-}\StringTok{ }\KeywordTok{fao_area_overlay}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_landing, }
+    \DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{)}
+
+\NormalTok{balbaya_landing <-}\StringTok{ }\KeywordTok{fao_area_overlay_unassociated}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_landing[}\KeywordTok{is.na}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ], }\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =}\NormalTok{ f_area_near, }
+    \DataTypeTok{f_subarea =}\NormalTok{ f_subarea_near, }\DataTypeTok{f_division =}\NormalTok{ f_division_near) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{f_area_near, }\OperatorTok{-}\NormalTok{f_subarea_near, }
+        \OperatorTok{-}\NormalTok{f_division_near) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rbind}\NormalTok{(balbaya_landing[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ])}
+
+\NormalTok{balbaya_landing_fao_area <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(balbaya_landing[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_division_final =} \KeywordTok{ifelse}\NormalTok{(f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34.2"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{, f_division), }\DataTypeTok{f_subarea_final =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, f_division_final, f_subarea), }\DataTypeTok{eez_indicator =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{%in%}\StringTok{ }
+\StringTok{    }\KeywordTok{c}\NormalTok{(}\StringTok{"41"}\NormalTok{, }\StringTok{"47"}\NormalTok{, }\StringTok{"51"}\NormalTok{, }\StringTok{"57"}\NormalTok{), }\StringTok{"NA"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{==}\StringTok{ "34.1.1"}\NormalTok{, }
+    \StringTok{"COAST"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{%in%}\StringTok{ }
+\StringTok{        }\KeywordTok{c}\NormalTok{(}\StringTok{"34.1.2"}\NormalTok{, }\StringTok{"34.1.3"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{), }
+        \StringTok{"RFMO"}\NormalTok{, }\StringTok{"NA"}\NormalTok{)), }\StringTok{"eez_not_defined"}\NormalTok{)))}
+
+\NormalTok{balbaya_landing <-}\StringTok{ }\NormalTok{balbaya_landing }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(balbaya_landing_fao_area, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sub_region =}\NormalTok{ f_subarea_final)}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(balbaya_landing[}\KeywordTok{is.na}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{sub_region), }
+\NormalTok{    ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+    \ControlFlowTok{if}\NormalTok{ (}\StringTok{"eez_not_defined"} \OperatorTok{%in%}\StringTok{ }\KeywordTok{unique}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{eez_indicator)) \{}
+        \KeywordTok{stop}\NormalTok{(}\StringTok{"You have at least one eez not defined"}\NormalTok{, }
+            \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }\StringTok{"Checking data and code above"}\NormalTok{)}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{        balbaya_landing_rectangle <-}\StringTok{ }\KeywordTok{select}\NormalTok{(}\DataTypeTok{.data =}\NormalTok{ balbaya_landing, }
+            \OperatorTok{-}\NormalTok{f_area, }\OperatorTok{-}\NormalTok{f_subarea, }\OperatorTok{-}\NormalTok{f_division, }
+            \OperatorTok{-}\NormalTok{fishing_mode, }\OperatorTok{-}\NormalTok{f_division_final, }
+            \OperatorTok{-}\NormalTok{f_subarea_final)}
+\NormalTok{        balbaya_landing <-}\StringTok{ }\KeywordTok{select}\NormalTok{(}\DataTypeTok{.data =}\NormalTok{ balbaya_landing, }
+            \OperatorTok{-}\NormalTok{latitude, }\OperatorTok{-}\NormalTok{longitude, }\OperatorTok{-}\NormalTok{f_area, }
+            \OperatorTok{-}\NormalTok{f_subarea, }\OperatorTok{-}\NormalTok{f_division, }\OperatorTok{-}\NormalTok{f_division_final, }
+            \OperatorTok{-}\NormalTok{f_subarea_final)}
+\NormalTok{    \}}
+\NormalTok{\}}
+
+\NormalTok{balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ balbaya_landing}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"[^_]*"}\NormalTok{))}
+\NormalTok{balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ balbaya_landing}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"(?<=_)}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{w+"}\NormalTok{))}
+\NormalTok{balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{, }
+\NormalTok{    balbaya_landing}\OperatorTok{$}\NormalTok{fishing_mode, }\DataTypeTok{sep =} \StringTok{"-"}\NormalTok{)}
+\NormalTok{balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{, }
+\NormalTok{    balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+\NormalTok{balbaya_landing}\OperatorTok{$}\NormalTok{domain_landings <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(balbaya_landing}\OperatorTok{$}\NormalTok{country, }
+\NormalTok{    balbaya_landing}\OperatorTok{$}\NormalTok{quarter, balbaya_landing}\OperatorTok{$}\NormalTok{sub_region, }
+\NormalTok{    balbaya_landing}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{, balbaya_landing}\OperatorTok{$}\NormalTok{vessel_length, }
+\NormalTok{    balbaya_landing}\OperatorTok{$}\NormalTok{species, }\StringTok{"NA"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+
+\NormalTok{balbaya_landing <-}\StringTok{ }\NormalTok{balbaya_landing }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, fishing_mode, domain_landings, }
+\NormalTok{    supra_region, sub_region, eez_indicator, }
+\NormalTok{    geo_indicator, specon_tech, deep, species) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg =} \KeywordTok{sum}\NormalTok{(totwghtlandg)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\CommentTok{# Final design}
+\NormalTok{tablea_final <-}\StringTok{ }\NormalTok{balbaya_landing }\OperatorTok{%>%}\StringTok{ }\KeywordTok{full_join}\NormalTok{(observe_bycatch, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }\StringTok{"year"}\NormalTok{, }\StringTok{"quarter"}\NormalTok{, }
+        \StringTok{"vessel_length"}\NormalTok{, }\StringTok{"fishing_tech"}\NormalTok{, }
+        \StringTok{"gear_type"}\NormalTok{, }\StringTok{"target_assemblage"}\NormalTok{, }
+        \StringTok{"mesh_size_range"}\NormalTok{, }\StringTok{"metier"}\NormalTok{, }\StringTok{"fishing_mode"}\NormalTok{, }
+        \StringTok{"supra_region"}\NormalTok{, }\StringTok{"sub_region"}\NormalTok{, }\StringTok{"eez_indicator"}\NormalTok{, }
+        \StringTok{"geo_indicator"}\NormalTok{, }\StringTok{"specon_tech"}\NormalTok{, }\StringTok{"deep"}\NormalTok{, }
+        \StringTok{"species"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{discards =} \KeywordTok{ifelse}\NormalTok{(fishing_tech }\OperatorTok{==}\StringTok{ }
+\StringTok{    "HOK"}\NormalTok{, }\StringTok{"NK"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(discards), }
+    \DecValTok{0}\NormalTok{, }\KeywordTok{round}\NormalTok{(discards, }\DecValTok{3}\NormalTok{))), }\DataTypeTok{retained_tons =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(retained_tons), }
+    \DecValTok{0}\NormalTok{, retained_tons), }\DataTypeTok{totwghtlandg =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totwghtlandg), }
+    \DecValTok{0}\NormalTok{, totwghtlandg), }\DataTypeTok{totwghtlandg =} \KeywordTok{round}\NormalTok{(totwghtlandg }\OperatorTok{+}\StringTok{ }
+\StringTok{    }\NormalTok{retained_tons, }\DecValTok{3}\NormalTok{), }\DataTypeTok{domain_landings =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(domain_landings), }
+\NormalTok{    domain_discards, domain_landings), }\DataTypeTok{domain_discards =} \KeywordTok{ifelse}\NormalTok{(discards }\OperatorTok{==}\StringTok{ }
+\StringTok{    }\DecValTok{0}\NormalTok{, domain_landings, }\KeywordTok{ifelse}\NormalTok{(discards }\OperatorTok{==}\StringTok{ }
+\StringTok{    "NK"}\NormalTok{, }\StringTok{"NK"}\NormalTok{, domain_discards)), }\DataTypeTok{confidential =} \KeywordTok{ifelse}\NormalTok{(fishing_tech }\OperatorTok{==}\StringTok{ }
+\StringTok{    "HOK"}\NormalTok{, }\StringTok{"Y"}\NormalTok{, }\StringTok{"N"}\NormalTok{), }\DataTypeTok{totvallandg =} \KeywordTok{ifelse}\NormalTok{(totwghtlandg }\OperatorTok{==}\StringTok{ }
+\StringTok{    }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\StringTok{"NK"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(country, year, }
+\NormalTok{    quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, domain_discards, domain_landings, }
+\NormalTok{    supra_region, sub_region, eez_indicator, }
+\NormalTok{    geo_indicator, specon_tech, deep, species, }
+\NormalTok{    totwghtlandg, totvallandg, discards, }
+\NormalTok{    confidential)}
+
+\KeywordTok{names}\NormalTok{(tablea_final) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(tablea_final))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{table-d-discards-length-data}{%
+\subsection{Table D: Discards length
+data}\label{table-d-discards-length-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{observer_discard <-}\StringTok{ }\OtherTok{NULL}
+\ControlFlowTok{for}\NormalTok{ (file_name }\ControlFlowTok{in} \KeywordTok{list.files}\NormalTok{(}\DataTypeTok{path =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"work_path"}\NormalTok{]], }
+    \StringTok{"3-Data}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{discards"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{))) \{}
+\NormalTok{    observer_discard <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(observer_discard, }
+        \KeywordTok{read.csv2}\NormalTok{(}\KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"work_path"}\NormalTok{]], }
+            \StringTok{"3-Data}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{discards"}\NormalTok{, file_name, }
+            \DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }\DataTypeTok{stringsAsFactors =} \OtherTok{FALSE}\NormalTok{))}
+\NormalTok{\}}
+\KeywordTok{rm}\NormalTok{(file_name)}
+
+\NormalTok{tabled_final <-}\StringTok{ }\NormalTok{observer_discard }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{totwghtlandg, }
+    \OperatorTok{-}\NormalTok{discards) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(tablea_final[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }\StringTok{"DOMAIN_DISCARDS"}\NormalTok{, }
+        \StringTok{"SPECIES"}\NormalTok{, }\StringTok{"TOTWGHTLANDG"}\NormalTok{, }\StringTok{"DISCARDS"}\NormalTok{)], }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{country =} \StringTok{"COUNTRY"}\NormalTok{, }\DataTypeTok{year =} \StringTok{"YEAR"}\NormalTok{, }
+        \DataTypeTok{domain_discards =} \StringTok{"DOMAIN_DISCARDS"}\NormalTok{, }
+        \DataTypeTok{species =} \StringTok{"SPECIES"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(country, }
+\NormalTok{    year, domain_discards, species, TOTWGHTLANDG, }
+\NormalTok{    DISCARDS, no_samples, no_length_measurements, }
+\NormalTok{    length_unit, min_length, max_length, }
+\NormalTok{    length, no_length)}
+
+\KeywordTok{names}\NormalTok{(tabled_final) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(tabled_final))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : ici on devrait
+lors de la jointure des deux tables, on devrait avoir aucune perte du
+point de vue des rejets observés. Cependant on peut constater que
+certains rejets ne sont associés à aucune données de la table A (d'ou
+l'utilisation d'un ``inner\_join''). L'année prochaine, il faudra
+étudier cela de plus prés et voir si le problème est toujours présent
+lors de l'utilisation des données depuis la base de données ObServe
+(sans passer par l'intermédiaire des extractions de Philippe S.).
+
+\hypertarget{table-f-landings-length-data}{%
+\subsection{Table F: Landings length
+data}\label{table-f-landings-length-data}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# By-catch retained data from table A}
+\NormalTok{observe_bycatch_retained_tabled <-}\StringTok{ }\NormalTok{observe_bycatch_retained }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(country, year, quarter, sub_region, }
+\NormalTok{        metier, school_type, vessel_length, }
+\NormalTok{        species) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{retained_tons =} \KeywordTok{sum}\NormalTok{(retained_tons)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{fishing_mode =}\NormalTok{ school_type) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{fishing_mode =} \KeywordTok{as.character}\NormalTok{(fishing_mode))}
+
+\CommentTok{# Landings}
+\NormalTok{balbaya_landing_cwp_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"balbaya_landing_cwp.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }
+    \DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+
+\NormalTok{balbaya_landing_cwp <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(balbaya_con, }
+\NormalTok{    balbaya_landing_cwp_query)}
+
+\NormalTok{balbaya_landing_cwp <-}\StringTok{ }\KeywordTok{cwp_to_center}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_landing_cwp, }
+    \DataTypeTok{cwp_name =} \StringTok{"cwp"}\NormalTok{, }\DataTypeTok{cwp_length =} \DecValTok{5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{fao_area_overlay}\NormalTok{(}\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }
+        \DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+        \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{)}
+
+\NormalTok{balbaya_landing_cwp <-}\StringTok{ }\KeywordTok{fao_area_overlay_unassociated}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_landing_cwp[}\KeywordTok{is.na}\NormalTok{(balbaya_landing_cwp}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ], }\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{, }\DataTypeTok{tolerance =} \DecValTok{250}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =}\NormalTok{ f_area_near, }\DataTypeTok{f_subarea =}\NormalTok{ f_subarea_near, }
+        \DataTypeTok{f_division =}\NormalTok{ f_division_near) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{f_area_near, }\OperatorTok{-}\NormalTok{f_subarea_near, }
+        \OperatorTok{-}\NormalTok{f_division_near) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rbind}\NormalTok{(balbaya_landing_cwp[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(balbaya_landing_cwp}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ])}
+
+\NormalTok{balbaya_landing_cwp_fao_area <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(balbaya_landing_cwp[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_division_final =} \KeywordTok{ifelse}\NormalTok{(f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34.2"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{, f_division), }\DataTypeTok{f_subarea_final =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, f_division_final, f_subarea))}
+
+\NormalTok{balbaya_landing_cwp <-}\StringTok{ }\NormalTok{balbaya_landing_cwp }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{inner_join}\NormalTok{(balbaya_landing_cwp_fao_area, }
+        \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sub_region =}\NormalTok{ f_subarea_final) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(country, year, quarter, sub_region, }
+\NormalTok{        metier, fishing_mode, vessel_length, }
+\NormalTok{        species) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg =} \KeywordTok{sum}\NormalTok{(totwghtlandg)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{balbaya_landing_tablef <-}\StringTok{ }\NormalTok{balbaya_landing_cwp }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{full_join}\NormalTok{(observe_bycatch_retained_tabled, }
+        \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }\StringTok{"year"}\NormalTok{, }\StringTok{"quarter"}\NormalTok{, }
+            \StringTok{"sub_region"}\NormalTok{, }\StringTok{"metier"}\NormalTok{, }\StringTok{"fishing_mode"}\NormalTok{, }
+            \StringTok{"vessel_length"}\NormalTok{, }\StringTok{"species"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{totwghtlandg =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totwghtlandg), }
+        \DecValTok{0}\NormalTok{, totwghtlandg), }\DataTypeTok{retained_tons =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(retained_tons), }
+        \DecValTok{0}\NormalTok{, retained_tons), }\DataTypeTok{totwghtlandg =} \KeywordTok{round}\NormalTok{(totwghtlandg }\OperatorTok{+}\StringTok{ }
+\StringTok{        }\NormalTok{retained_tons, }\DecValTok{3}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{domain_landings =} \KeywordTok{paste}\NormalTok{(country, }
+\NormalTok{        quarter, sub_region, }\KeywordTok{paste0}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(}\KeywordTok{strsplit}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ metier, }
+            \DataTypeTok{split =} \StringTok{"_"}\NormalTok{))[}\DecValTok{1}\NormalTok{], }\StringTok{"-"}\NormalTok{, fishing_mode, }
+            \StringTok{"_"}\NormalTok{, }\KeywordTok{paste}\NormalTok{(}\KeywordTok{unlist}\NormalTok{(}\KeywordTok{strsplit}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ metier, }
+                \DataTypeTok{split =} \StringTok{"_"}\NormalTok{))[}\OperatorTok{-}\DecValTok{1}\NormalTok{], }\DataTypeTok{collapse =} \StringTok{"_"}\NormalTok{)), }
+\NormalTok{        vessel_length, species, }\StringTok{"NA"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{), }
+        \DataTypeTok{no_samples =} \DecValTok{1}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{quarter, }
+    \OperatorTok{-}\NormalTok{sub_region, }\OperatorTok{-}\NormalTok{metier, }\OperatorTok{-}\NormalTok{fishing_mode, }
+    \OperatorTok{-}\NormalTok{vessel_length, }\OperatorTok{-}\NormalTok{retained_tons)}
+
+\CommentTok{# CAS from sardara}
+\NormalTok{sardara_cas_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"sardara_cas.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }\DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{sardara_cas <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(sardara_con, sardara_cas_query)}
+
+\NormalTok{sardara_cas <-}\StringTok{ }\KeywordTok{cwp_to_center}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ sardara_cas, }
+    \DataTypeTok{cwp_name =} \StringTok{"cwp"}\NormalTok{, }\DataTypeTok{cwp_length =} \DecValTok{5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{fao_area_overlay}\NormalTok{(}\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }
+        \DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+        \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{)}
+
+\NormalTok{sardara_cas <-}\StringTok{ }\KeywordTok{fao_area_overlay_unassociated}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ sardara_cas[}\KeywordTok{is.na}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ], }\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{, }\DataTypeTok{tolerance =} \DecValTok{250}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =}\NormalTok{ f_area_near, }\DataTypeTok{f_subarea =}\NormalTok{ f_subarea_near, }
+        \DataTypeTok{f_division =}\NormalTok{ f_division_near) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{f_area_near, }\OperatorTok{-}\NormalTok{f_subarea_near, }
+        \OperatorTok{-}\NormalTok{f_division_near) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rbind}\NormalTok{(sardara_cas[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ])}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(sardara_cas[}\KeywordTok{is.na}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{sardara_cas_fao_area <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(sardara_cas[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_division_final =} \KeywordTok{ifelse}\NormalTok{(f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34.2"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{, f_division), }\DataTypeTok{f_subarea_final =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, f_division_final, f_subarea), }\DataTypeTok{eez_indicator =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{%in%}\StringTok{ }
+\StringTok{    }\KeywordTok{c}\NormalTok{(}\StringTok{"41"}\NormalTok{, }\StringTok{"47"}\NormalTok{, }\StringTok{"51"}\NormalTok{, }\StringTok{"57"}\NormalTok{), }\StringTok{"NA"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{==}\StringTok{ "34.1.1"}\NormalTok{, }
+    \StringTok{"COAST"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{%in%}\StringTok{ }
+\StringTok{        }\KeywordTok{c}\NormalTok{(}\StringTok{"34.1.2"}\NormalTok{, }\StringTok{"34.1.3"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{), }
+        \StringTok{"RFMO"}\NormalTok{, }\StringTok{"NA"}\NormalTok{)), }\StringTok{"eez_not_defined"}\NormalTok{)))}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(sardara_cas_fao_area[sardara_cas_fao_area}\OperatorTok{$}\NormalTok{eez_indicator }\OperatorTok{==}\StringTok{ }
+\StringTok{    "eez_not_defined"}\NormalTok{, ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{sardara_cas <-}\StringTok{ }\NormalTok{sardara_cas }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(sardara_cas_fao_area, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{))}
+
+\NormalTok{sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ sardara_cas}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"[^_]*"}\NormalTok{))}
+\NormalTok{sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_extract}\NormalTok{(}\DataTypeTok{string =}\NormalTok{ sardara_cas}\OperatorTok{$}\NormalTok{metier, }
+    \DataTypeTok{pattern =} \KeywordTok{regex}\NormalTok{(}\DataTypeTok{pattern =} \StringTok{"(?<=_)}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{w+"}\NormalTok{))}
+\NormalTok{sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{1}\NormalTok{, }
+\NormalTok{    sardara_cas}\OperatorTok{$}\NormalTok{fishing_mode, }\DataTypeTok{sep =} \StringTok{"-"}\NormalTok{)}
+\NormalTok{sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{ <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{3}\NormalTok{, }
+\NormalTok{    sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{2}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+\NormalTok{sardara_cas}\OperatorTok{$}\NormalTok{domain_landings <-}\StringTok{ }\KeywordTok{str_c}\NormalTok{(sardara_cas}\OperatorTok{$}\NormalTok{country, }
+\NormalTok{    sardara_cas}\OperatorTok{$}\NormalTok{quarter, sardara_cas}\OperatorTok{$}\NormalTok{f_subarea_final, }
+\NormalTok{    sardara_cas}\OperatorTok{$}\NormalTok{metier_}\DecValTok{4}\NormalTok{, sardara_cas}\OperatorTok{$}\NormalTok{vessel_length, }
+\NormalTok{    sardara_cas}\OperatorTok{$}\NormalTok{species, }\StringTok{"NA"}\NormalTok{, }\DataTypeTok{sep =} \StringTok{"_"}\NormalTok{)}
+
+\NormalTok{sardara_cas <-}\StringTok{ }\NormalTok{sardara_cas }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, domain_landings, species, length) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{no_length =} \KeywordTok{sum}\NormalTok{(no_length)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, year, }
+\NormalTok{    domain_landings, species) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{min_length =} \KeywordTok{min}\NormalTok{(length), }
+    \DataTypeTok{max_length =} \KeywordTok{max}\NormalTok{(length), }\DataTypeTok{no_length_measurements =} \KeywordTok{n}\NormalTok{())}
+
+\CommentTok{# Merge for final table}
+\NormalTok{tablef_final <-}\StringTok{ }\NormalTok{balbaya_landing_tablef }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{inner_join}\NormalTok{(sardara_cas, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }
+        \StringTok{"year"}\NormalTok{, }\StringTok{"species"}\NormalTok{, }\StringTok{"domain_landings"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{length_unit =} \StringTok{"cm"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(country, }
+\NormalTok{    year, domain_landings, species, totwghtlandg, }
+\NormalTok{    no_samples, no_length_measurements, length_unit, }
+\NormalTok{    min_length, max_length, length, no_length) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{id_verif =} \KeywordTok{paste0}\NormalTok{(country, year, }
+\NormalTok{        domain_landings))}
+
+\KeywordTok{names}\NormalTok{(tablef_final) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(tablef_final))}
+
+\CommentTok{# Consistency with table A}
+\NormalTok{cons_tablea <-}\StringTok{ }\KeywordTok{setdiff}\NormalTok{(}\KeywordTok{unique}\NormalTok{(tablef_final[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }\StringTok{"DOMAIN_LANDINGS"}\NormalTok{)]), }
+    \KeywordTok{unique}\NormalTok{(tablea_final[, }\KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }
+        \StringTok{"DOMAIN_LANDINGS"}\NormalTok{)])) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{id_verif =} \KeywordTok{paste0}\NormalTok{(COUNTRY, }
+\NormalTok{    YEAR, DOMAIN_LANDINGS)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(id_verif)}
+
+\NormalTok{cons_tablea =}\StringTok{ }\NormalTok{cons_tablea}\OperatorTok{$}\NormalTok{id_verif}
+
+\NormalTok{tablef_final <-}\StringTok{ }\NormalTok{tablef_final[}\OperatorTok{!}\NormalTok{tablef_final}\OperatorTok{$}\NormalTok{ID_VERIF }\OperatorTok{%in%}\StringTok{ }
+\StringTok{    }\NormalTok{cons_tablea, ]}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : Ici nous avons été
+obligé de récupérer les données de débarquement depuis la base de
+données Balbaya en utilisant un autre niveau d'agrégation que celui
+utilisé pour la table A. En effet les ``Catch-at-size'' (CAS) de la base
+de données Sardara sont exprimé en carrée de 5 degrée. Pour pouvoir les
+regrouper avec les débarquements il est donc nécessaire de représenter
+les débarquements par carrée de 5 degrée (et non plus par latitude et
+longitude). Par ailleurs, lors de la jointure des deux tables finales on
+perd des données. Cela veut dont dire que certains CAS ne sont affectées
+à aucun débarquement et vis versa. L'an prochain il faudra regarder de
+plus près cela et si possible retracer le processus de calcul des CAS
+(actuellement calculé via le processus T3) avec les agrégations
+demandées par l'appel à données.
+
+\hypertarget{table-g-effort-summary}{%
+\subsection{Table G: Effort summary}\label{table-g-effort-summary}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{balbaya_effort_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"balbaya_effort.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }
+    \DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+
+\NormalTok{balbaya_effort <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(balbaya_con, }
+\NormalTok{    balbaya_effort_query)}
+
+\CommentTok{# Classification according FDI spatial}
+\CommentTok{# area}
+\NormalTok{balbaya_effort <-}\StringTok{ }\KeywordTok{fao_area_overlay}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_effort, }
+    \DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{)}
+
+\NormalTok{balbaya_effort <-}\StringTok{ }\KeywordTok{fao_area_overlay_unassociated}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_effort[}\KeywordTok{is.na}\NormalTok{(balbaya_effort}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ], }\DataTypeTok{overlay_level =} \StringTok{"division"}\NormalTok{, }\DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{, }
+    \DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =}\NormalTok{ f_area_near, }
+    \DataTypeTok{f_subarea =}\NormalTok{ f_subarea_near, }\DataTypeTok{f_division =}\NormalTok{ f_division_near) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{f_area_near, }\OperatorTok{-}\NormalTok{f_subarea_near, }
+        \OperatorTok{-}\NormalTok{f_division_near) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{rbind}\NormalTok{(balbaya_effort[}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(balbaya_effort}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ]) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_area =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "47"} \OperatorTok{&}\StringTok{ }\NormalTok{f_subarea }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"34.3"}\NormalTok{, }\StringTok{"34.4"}\NormalTok{), }
+    \StringTok{"34"}\NormalTok{, f_area))}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(balbaya_effort[}\KeywordTok{is.na}\NormalTok{(balbaya_effort}\OperatorTok{$}\NormalTok{f_subarea), }
+\NormalTok{    ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{balbaya_effort_fao_area <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(balbaya_effort[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rowwise}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{f_division_final =} \KeywordTok{ifelse}\NormalTok{(f_subarea }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34.2"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{, f_division), }\DataTypeTok{f_subarea_final =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"} \OperatorTok{|}\StringTok{ }\NormalTok{f_area }\OperatorTok{==}\StringTok{ "27"}\NormalTok{, f_division_final, }
+\NormalTok{    f_subarea), }\DataTypeTok{eez_indicator =} \KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{%in%}\StringTok{ }
+\StringTok{    }\KeywordTok{c}\NormalTok{(}\StringTok{"41"}\NormalTok{, }\StringTok{"47"}\NormalTok{, }\StringTok{"51"}\NormalTok{, }\StringTok{"57"}\NormalTok{), }\StringTok{"NA"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "34"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{==}\StringTok{ "34.1.1"}\NormalTok{, }
+    \StringTok{"COAST"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{%in%}\StringTok{ }
+\StringTok{        }\KeywordTok{c}\NormalTok{(}\StringTok{"34.1.2"}\NormalTok{, }\StringTok{"34.1.3"}\NormalTok{, }\StringTok{"34.2.0"}\NormalTok{), }
+        \StringTok{"RFMO"}\NormalTok{, }\StringTok{"NA"}\NormalTok{)), }\KeywordTok{ifelse}\NormalTok{(f_area }\OperatorTok{==}\StringTok{ }
+\StringTok{    "27"}\NormalTok{, }\KeywordTok{ifelse}\NormalTok{(f_subarea_final }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"27.9.a"}\NormalTok{, }
+    \StringTok{"27.8.a"}\NormalTok{, }\StringTok{"27.8.c"}\NormalTok{), }\StringTok{"NA"}\NormalTok{, }\StringTok{"RFMO"}\NormalTok{), }\StringTok{"eez_not_defined"}\NormalTok{))))}
+
+\ControlFlowTok{if}\NormalTok{ (}\KeywordTok{dim}\NormalTok{(}\KeywordTok{as.data.frame}\NormalTok{(balbaya_effort_fao_area[balbaya_effort_fao_area}\OperatorTok{$}\NormalTok{eez_indicator }\OperatorTok{==}\StringTok{ }
+\StringTok{    "eez_not_defined"}\NormalTok{, ]))[}\DecValTok{1}\NormalTok{] }\OperatorTok{!=}\StringTok{ }\DecValTok{0}\NormalTok{) \{}
+    \KeywordTok{stop}\NormalTok{(}\StringTok{"You have NA(s) value(s)"}\NormalTok{, }\StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{, }
+        \StringTok{"Checking data"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{balbaya_effort <-}\StringTok{ }\NormalTok{balbaya_effort }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(balbaya_effort_fao_area, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"f_area"}\NormalTok{, }\StringTok{"f_subarea"}\NormalTok{, }\StringTok{"f_division"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sub_region =}\NormalTok{ f_subarea_final)}
+
+\NormalTok{balbaya_effort_rectangle <-}\StringTok{ }\NormalTok{balbaya_effort }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{vessel_id, }\OperatorTok{-}\NormalTok{totseadays, }\OperatorTok{-}\NormalTok{totkwdaysatsea, }
+        \OperatorTok{-}\NormalTok{totgtdaysatsea, }\OperatorTok{-}\NormalTok{totkwfishdays, }
+        \OperatorTok{-}\NormalTok{totgtfishdays, }\OperatorTok{-}\NormalTok{hrsea, }\OperatorTok{-}\NormalTok{kwhrsea, }
+        \OperatorTok{-}\NormalTok{gthrsea, }\OperatorTok{-}\NormalTok{f_area, }\OperatorTok{-}\NormalTok{f_subarea, }\OperatorTok{-}\NormalTok{f_division, }
+        \OperatorTok{-}\NormalTok{f_division_final, }\OperatorTok{-}\NormalTok{f_subarea_final)}
+
+\NormalTok{balbaya_effort_nb_vessel <-}\StringTok{ }\NormalTok{balbaya_effort }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(country, year, quarter, vessel_length, }
+\NormalTok{        fishing_tech, gear_type, target_assemblage, }
+\NormalTok{        mesh_size_range, metier, supra_region, }
+\NormalTok{        sub_region, eez_indicator, geo_indicator, }
+\NormalTok{        specon_tech) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totves =} \KeywordTok{n_distinct}\NormalTok{(vessel_id)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{balbaya_effort <-}\StringTok{ }\NormalTok{balbaya_effort }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, supra_region, sub_region, eez_indicator, }
+\NormalTok{    geo_indicator, specon_tech, deep) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totseadays =} \KeywordTok{sum}\NormalTok{(totseadays), }
+        \DataTypeTok{totkwdaysatsea =} \KeywordTok{sum}\NormalTok{(totkwdaysatsea), }
+        \DataTypeTok{totgtdaysatsea =} \KeywordTok{sum}\NormalTok{(totgtdaysatsea), }
+        \DataTypeTok{totfishdays =} \KeywordTok{sum}\NormalTok{(totfishdays), }\DataTypeTok{totkwfishdays =} \KeywordTok{sum}\NormalTok{(totkwfishdays), }
+        \DataTypeTok{totgtfishdays =} \KeywordTok{sum}\NormalTok{(totgtfishdays), }
+        \DataTypeTok{hrsea =} \KeywordTok{sum}\NormalTok{(hrsea), }\DataTypeTok{kwhrsea =} \KeywordTok{sum}\NormalTok{(kwhrsea), }
+        \DataTypeTok{gthrsea =} \KeywordTok{sum}\NormalTok{(gthrsea)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{totkwdaysatsea =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totkwdaysatsea), }
+        \StringTok{"NK"}\NormalTok{, totkwdaysatsea), }\DataTypeTok{totkwfishdays =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totkwfishdays), }
+        \StringTok{"NK"}\NormalTok{, totkwfishdays), }\DataTypeTok{kwhrsea =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(kwhrsea), }
+        \StringTok{"NK"}\NormalTok{, kwhrsea)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{inner_join}\NormalTok{(balbaya_effort_nb_vessel, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }\StringTok{"year"}\NormalTok{, }\StringTok{"quarter"}\NormalTok{, }
+        \StringTok{"vessel_length"}\NormalTok{, }\StringTok{"fishing_tech"}\NormalTok{, }
+        \StringTok{"gear_type"}\NormalTok{, }\StringTok{"target_assemblage"}\NormalTok{, }
+        \StringTok{"mesh_size_range"}\NormalTok{, }\StringTok{"metier"}\NormalTok{, }\StringTok{"supra_region"}\NormalTok{, }
+        \StringTok{"sub_region"}\NormalTok{, }\StringTok{"eez_indicator"}\NormalTok{, }\StringTok{"geo_indicator"}\NormalTok{, }
+        \StringTok{"specon_tech"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{confidential =} \KeywordTok{ifelse}\NormalTok{(fishing_tech }\OperatorTok{==}\StringTok{ }
+\StringTok{    "HOK"}\NormalTok{, }\StringTok{"Y"}\NormalTok{, }\StringTok{"N"}\NormalTok{))}
+
+\KeywordTok{names}\NormalTok{(balbaya_effort) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(balbaya_effort))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{table-h-landings-by-rectangle}{%
+\subsection{Table H: Landings by
+rectangle}\label{table-h-landings-by-rectangle}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{observe_bycatch_retained_tableh <-}\StringTok{ }\KeywordTok{lat_long_to_csquare}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ observe_bycatch_retained, }
+    \DataTypeTok{grid_square =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{latitude_name =} \StringTok{"latitude_dec"}\NormalTok{, }
+    \DataTypeTok{longitude_name =} \StringTok{"longitude_dec"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(country, year, quarter, vessel_length, }
+\NormalTok{        fishing_tech, gear_type, target_assemblage, }
+\NormalTok{        mesh_size_range, metier, supra_region, }
+\NormalTok{        geo_indicator, specon_tech, deep, }
+\NormalTok{        species, retained_tons, eez_indicator, }
+\NormalTok{        sub_region, grid_square_}\FloatTok{0.5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{c_square =}\NormalTok{ grid_square_}\FloatTok{0.5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{rectangle_type =} \StringTok{"NA"}\NormalTok{, }\DataTypeTok{rectangle_lat =} \StringTok{"NA"}\NormalTok{, }
+        \DataTypeTok{rectangle_lon =} \StringTok{"NA"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, supra_region, geo_indicator, }
+\NormalTok{    specon_tech, deep, species, sub_region, }
+\NormalTok{    eez_indicator, c_square, rectangle_type, }
+\NormalTok{    rectangle_lat, rectangle_lon) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{retained_tons =} \KeywordTok{sum}\NormalTok{(retained_tons)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{balbaya_landing_rectangle <-}\StringTok{ }\KeywordTok{lat_long_to_csquare}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_landing_rectangle, }
+    \DataTypeTok{grid_square =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{, }
+    \DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{rectangle_type =} \StringTok{"NA"}\NormalTok{, }
+    \DataTypeTok{rectangle_lat =} \StringTok{"NA"}\NormalTok{, }\DataTypeTok{rectangle_lon =} \StringTok{"NA"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{c_square =}\NormalTok{ grid_square_}\FloatTok{0.5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{latitude, }\OperatorTok{-}\NormalTok{longitude) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, supra_region, geo_indicator, }
+\NormalTok{    specon_tech, deep, species, sub_region, }
+\NormalTok{    eez_indicator, c_square, rectangle_type, }
+\NormalTok{    rectangle_lat, rectangle_lon) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg =} \KeywordTok{sum}\NormalTok{(totwghtlandg)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{tableh_final <-}\StringTok{ }\NormalTok{balbaya_landing_rectangle }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{full_join}\NormalTok{(observe_bycatch_retained_tableh, }
+        \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }\StringTok{"year"}\NormalTok{, }\StringTok{"quarter"}\NormalTok{, }
+            \StringTok{"vessel_length"}\NormalTok{, }\StringTok{"fishing_tech"}\NormalTok{, }
+            \StringTok{"gear_type"}\NormalTok{, }\StringTok{"target_assemblage"}\NormalTok{, }
+            \StringTok{"mesh_size_range"}\NormalTok{, }\StringTok{"metier"}\NormalTok{, }
+            \StringTok{"supra_region"}\NormalTok{, }\StringTok{"geo_indicator"}\NormalTok{, }
+            \StringTok{"specon_tech"}\NormalTok{, }\StringTok{"deep"}\NormalTok{, }\StringTok{"species"}\NormalTok{, }
+            \StringTok{"sub_region"}\NormalTok{, }\StringTok{"eez_indicator"}\NormalTok{, }
+            \StringTok{"c_square"}\NormalTok{, }\StringTok{"rectangle_type"}\NormalTok{, }
+            \StringTok{"rectangle_lat"}\NormalTok{, }\StringTok{"rectangle_lon"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{totwghtlandg =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totwghtlandg), }
+        \DecValTok{0}\NormalTok{, totwghtlandg), }\DataTypeTok{retained_tons =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(retained_tons), }
+        \DecValTok{0}\NormalTok{, retained_tons), }\DataTypeTok{totwghtlandg =} \KeywordTok{round}\NormalTok{(totwghtlandg }\OperatorTok{+}\StringTok{ }
+\StringTok{        }\NormalTok{retained_tons, }\DecValTok{3}\NormalTok{), }\DataTypeTok{totvallandg =} \StringTok{"NK"}\NormalTok{, }
+        \DataTypeTok{confidential =} \KeywordTok{ifelse}\NormalTok{(fishing_tech }\OperatorTok{==}\StringTok{ }
+\StringTok{            "HOK"}\NormalTok{, }\StringTok{"Y"}\NormalTok{, }\StringTok{"N"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, supra_region, sub_region, eez_indicator, }
+\NormalTok{    geo_indicator, specon_tech, deep, rectangle_type, }
+\NormalTok{    rectangle_lat, rectangle_lon, c_square, }
+\NormalTok{    species, totwghtlandg, totvallandg, confidential)}
+
+\KeywordTok{names}\NormalTok{(tableh_final) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(tableh_final))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{table-i-effort-by-rectangle}{%
+\subsection{Table I: Effort by
+rectangle}\label{table-i-effort-by-rectangle}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{balbaya_effort_rectangle <-}\StringTok{ }\KeywordTok{lat_long_to_csquare}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ balbaya_effort_rectangle, }
+    \DataTypeTok{grid_square =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{latitude_name =} \StringTok{"latitude"}\NormalTok{, }
+    \DataTypeTok{longitude_name =} \StringTok{"longitude"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{rectangle_type =} \StringTok{"NA"}\NormalTok{, }
+    \DataTypeTok{rectangle_lat =} \StringTok{"NA"}\NormalTok{, }\DataTypeTok{rectangle_lon =} \StringTok{"NA"}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{rename}\NormalTok{(}\DataTypeTok{c_square =}\NormalTok{ grid_square_}\FloatTok{0.5}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{select}\NormalTok{(}\OperatorTok{-}\NormalTok{latitude, }\OperatorTok{-}\NormalTok{longitude) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(country, }
+\NormalTok{    year, quarter, vessel_length, fishing_tech, }
+\NormalTok{    gear_type, target_assemblage, mesh_size_range, }
+\NormalTok{    metier, supra_region, geo_indicator, }
+\NormalTok{    specon_tech, deep, sub_region, eez_indicator, }
+\NormalTok{    c_square, rectangle_type, rectangle_lat, }
+\NormalTok{    rectangle_lon) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totfishdays =} \KeywordTok{sum}\NormalTok{(totfishdays)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(country, year, quarter, }
+\NormalTok{    vessel_length, fishing_tech, gear_type, }
+\NormalTok{    target_assemblage, mesh_size_range, metier, }
+\NormalTok{    supra_region, sub_region, eez_indicator, }
+\NormalTok{    geo_indicator, specon_tech, deep, rectangle_type, }
+\NormalTok{    rectangle_lat, rectangle_lon, c_square, }
+\NormalTok{    totfishdays) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{confidential =} \KeywordTok{ifelse}\NormalTok{(fishing_tech }\OperatorTok{==}\StringTok{ }
+\StringTok{    "HOK"}\NormalTok{, }\StringTok{"Y"}\NormalTok{, }\StringTok{"N"}\NormalTok{))}
+
+\KeywordTok{names}\NormalTok{(balbaya_effort_rectangle) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(balbaya_effort_rectangle))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{table-j-capacity-and-fleet-segment-effort}{%
+\subsection{Table J: Capacity and fleet segment
+effort}\label{table-j-capacity-and-fleet-segment-effort}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{balbaya_capacity_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"balbaya_capacity.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }
+    \DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{balbaya_capacity <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(balbaya_con, }
+\NormalTok{    balbaya_capacity_query)}
+
+\NormalTok{balbaya_maxseadays_query <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\KeywordTok{readLines}\NormalTok{(}\DataTypeTok{con =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"queries_loc"}\NormalTok{]], }
+    \StringTok{"balbaya_maxseadays.sql"}\NormalTok{, }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{)), }
+    \DataTypeTok{collapse =} \StringTok{"}\CharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{balbaya_maxseadays <-}\StringTok{ }\KeywordTok{dbGetQuery}\NormalTok{(balbaya_con, }
+\NormalTok{    balbaya_maxseadays_query)}
+
+\NormalTok{balbaya_capacity_final <-}\StringTok{ }\NormalTok{balbaya_capacity }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{inner_join}\NormalTok{(balbaya_maxseadays, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"country"}\NormalTok{, }
+        \StringTok{"year"}\NormalTok{, }\StringTok{"vessel_length"}\NormalTok{, }\StringTok{"fishing_tech"}\NormalTok{, }
+        \StringTok{"supra_region"}\NormalTok{, }\StringTok{"geo_indicator"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{totkw =} \KeywordTok{ifelse}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(totkw), }\StringTok{"NK"}\NormalTok{, }
+\NormalTok{        totkw))}
+
+\KeywordTok{names}\NormalTok{(balbaya_capacity_final) <-}\StringTok{ }\KeywordTok{toupper}\NormalTok{(}\KeywordTok{names}\NormalTok{(balbaya_capacity_final))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{script-de-verification-des-donnees}{%
+\section{Script de verification des
+données}\label{script-de-verification-des-donnees}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Total landings}
+\NormalTok{check_landing_tablea <-}\StringTok{ }\NormalTok{tablea_final }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg_tablea =} \KeywordTok{sum}\NormalTok{(TOTWGHTLANDG)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_landing_tablef <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(tablef_final[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }\StringTok{"DOMAIN_LANDINGS"}\NormalTok{, }
+        \StringTok{"TOTWGHTLANDG"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(COUNTRY, }
+\NormalTok{    YEAR) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg_tablef =} \KeywordTok{sum}\NormalTok{(TOTWGHTLANDG)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_landing_tableh <-}\StringTok{ }\NormalTok{tableh_final }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totwghtlandg_tableh =} \KeywordTok{sum}\NormalTok{(TOTWGHTLANDG)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_landing <-}\StringTok{ }\NormalTok{check_landing_tablea }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{full_join}\NormalTok{(check_landing_tablef, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }
+        \StringTok{"YEAR"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{full_join}\NormalTok{(check_landing_tableh, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{))}
+
+\CommentTok{# Total discard}
+\NormalTok{check_discard_tablea <-}\StringTok{ }\NormalTok{tablea_final }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{DISCARDS =} \KeywordTok{ifelse}\NormalTok{(DISCARDS }\OperatorTok{==}\StringTok{ }
+\StringTok{        "NK"}\NormalTok{, }\OtherTok{NA}\NormalTok{, DISCARDS), }\DataTypeTok{DISCARDS =} \KeywordTok{as.numeric}\NormalTok{(DISCARDS)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{discard_tablea =} \KeywordTok{sum}\NormalTok{(DISCARDS, }
+    \DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_observe_bycatch <-}\StringTok{ }\NormalTok{observe_bycatch }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(country, year) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{discard_observe_bycatch =} \KeywordTok{sum}\NormalTok{(discards)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_discard_tabled <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(tabled_final[, }
+    \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }\StringTok{"DOMAIN_DISCARDS"}\NormalTok{, }
+        \StringTok{"DISCARDS"}\NormalTok{)]) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{DISCARDS =} \KeywordTok{as.numeric}\NormalTok{(DISCARDS)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{discard_tabled =} \KeywordTok{sum}\NormalTok{(DISCARDS)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_discards <-}\StringTok{ }\NormalTok{check_discard_tablea }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{full_join}\NormalTok{(check_observe_bycatch, }\DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\DataTypeTok{COUNTRY =} \StringTok{"country"}\NormalTok{, }
+        \DataTypeTok{YEAR =} \StringTok{"year"}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{full_join}\NormalTok{(check_discard_tabled, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{))}
+
+\CommentTok{# Effort}
+\NormalTok{check_effort_tableg <-}\StringTok{ }\NormalTok{balbaya_effort }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR, FISHING_TECH) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totfishdays =} \KeywordTok{sum}\NormalTok{(TOTFISHDAYS)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_effort_tablei <-}\StringTok{ }\NormalTok{balbaya_effort_rectangle }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{group_by}\NormalTok{(COUNTRY, YEAR, FISHING_TECH) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{totfishdays =} \KeywordTok{sum}\NormalTok{(TOTFISHDAYS)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{    }\KeywordTok{ungroup}\NormalTok{()}
+
+\NormalTok{check_effort <-}\StringTok{ }\NormalTok{check_effort_tableg }\OperatorTok{%>%}\StringTok{ }\KeywordTok{full_join}\NormalTok{(check_effort_tablei, }
+    \DataTypeTok{by =} \KeywordTok{c}\NormalTok{(}\StringTok{"COUNTRY"}\NormalTok{, }\StringTok{"YEAR"}\NormalTok{, }\StringTok{"FISHING_TECH"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{explications-du-script-dexportation-des-tables}{%
+\section{Explications du script d'exportation des
+tables}\label{explications-du-script-dexportation-des-tables}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Table A}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(tablea_final), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_A_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table D}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(tabled_final), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_D_NAO_OFR_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table F}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ tablef_final, }\DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+    \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_F_NAO_OFR_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+        \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table G}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(balbaya_effort), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_G_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table H}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(tableh_final), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_H_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table I}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(balbaya_effort_rectangle), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_I_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+
+\CommentTok{# Table J}
+\KeywordTok{write.csv2}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.data.frame}\NormalTok{(balbaya_capacity_final), }
+    \DataTypeTok{file =} \KeywordTok{file.path}\NormalTok{(config_file[[}\StringTok{"output_loc"}\NormalTok{]], }
+        \KeywordTok{paste0}\NormalTok{(}\StringTok{"TABLE_J_IRD_"}\NormalTok{, }\KeywordTok{format}\NormalTok{(}\KeywordTok{as.POSIXct}\NormalTok{(}\KeywordTok{Sys.time}\NormalTok{()), }
+            \StringTok{"%Y%m%d_%H%M%S"}\NormalTok{), }\StringTok{".csv"}\NormalTok{), }\DataTypeTok{fsep =} \StringTok{"}\CharTok{\textbackslash{}\textbackslash{}}\StringTok{"}\NormalTok{), }
+    \DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{\(\color{red}{\text{Point de vigilance}}\)} : ici les tables
+sont exportées en csv plutot que en xlsx (demandé dans les
+spécifications de l'appel à données). Cela s'explique car la fonction
+d'exportation du package ``xlsx'' n'est pas du tout optimisée pour les
+gros jeux de données. Il est beaucoup plus rapide d'exporter directement
+les données en csv puis de convertir le fichier en xlsx via Excel.
+
+
+\end{document}
