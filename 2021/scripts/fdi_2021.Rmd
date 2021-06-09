@@ -844,7 +844,7 @@ sardara_cas <- sardara_cas %>%
                                                                   "57"),
                                          yes = "Indien",
                                          no = "new_fao_area")),
-         mean_weigth_at_length = t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "a"] * length ^ t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "b"],
+         mean_weight_at_length = t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "a"] * length ^ t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "b"],
          weight_unit = "kg") %>%
   rowwise() %>%
   mutate(metier_1 = str_extract(string = metier,
@@ -877,7 +877,7 @@ sardara_cas <- sardara_cas %>%
            nep_sub_region,
            species,
            length,
-           mean_weigth_at_length,
+           mean_weight_at_length,
            weight_unit) %>%
   summarise(no_length = sum(no_length),
             .groups = "drop") %>%
@@ -911,7 +911,7 @@ tablef_final <- balbaya_landing_tablef %>%
          max_length,
          length,
          no_length,
-         mean_weigth_at_length,
+         mean_weight_at_length,
          weight_unit) %>%
   mutate(id_verif = paste0(country,
                            year,
