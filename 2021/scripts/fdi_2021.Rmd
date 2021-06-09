@@ -1,0 +1,1753 @@
+---
+title: "2021 Fisheries Dependent Information data call"
+author:
+  - Mathieu Depetris^[IRD, mathieu.depetris@ird.fr]
+  - Laurent Floc'h^[IRD, laurent.floch@ird.fr]
+  - Philippe Sabarros^[IRD, philippe.sabarros@ird.fr]
+date: "04/06/2021"
+output: 
+  html_document: 
+    self_contained: no
+---
+
+# 1 - Data call description: 2021 Fisheries Dependent Information data call
+
+The Scientific Fisheries Dependent Information (FDI) database was developed to support the management of fishing effort management regimes. With a transition to area-based multi-annual plans there was an opportunity to both rationalise the data base and move to the collection of an EU wide data set of fishing capacity, effort, landings, and discards. In 2018 the Commission requested the STECF to collect and review data in relation to a newly specified Fisheries Dependent Information Database. Expert working groups (STECF EWG-18-11, STECF 19-11, STECF 20-10) reviewed both the data supplied and the appropriateness of the data call with respect to:
+
+* Completeness of data in terms of areas of fishing, types of fleet segment and gear operated and species identified;
+* Completeness of data in terms of type of data requested;
+* The level of compatibility between the effort data in the FDI database and that submitted to the Mediterranean and Black Sea data call;
+* The level of compatibility between the landings data in the FDI database and that submitted to the Mediterranean and Black Sea data call for those species listed.
+
+This year, we have to provide:
+
+* data for the years 2014 and 2020 (there is the possibility to resubmit data for the years 2015-2019),
+* tables associated A (catch summary), D (discards length data), table F (landings length data), table F (effort summary), table H (landings by rectangle), table I (effort by rectangle) and table J (capacity and fleet segment effort).
+
+# 2 - Data call tables generation
+
+```{r setup rmd, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+```{r setup R}
+#install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
+#pak::pkg_install("OB7-IRD/furdeb")
+library(furdeb)
+library(tidyverse)
+library(RPostgreSQL)
+library(readxl)
+library(openxlsx)
+# not apply scientific format for number (may cause problems for cwp maniuplation)
+scipen_defaut <- options("scipen")
+options("scipen" = 100)
+```
+
+```{r parameters definition}
+periode <- c(2015:2019)
+# 1 = PS, 2 = BB and 3 = LL
+gear <- c(1, 2, 3)
+# for the French fleet, 1 = France & 41 = Mayotte
+flag <- c(1, 41)
+configuration_file <- configuration_file(path_file = "fdi2021_configuration_file.yml",
+                                         silent = TRUE)
+path_sql_queries_directory <- paste0(configuration_file[["wd_path"]],
+                                     "\\scripts\\sql")
+path_referentials <- paste0(configuration_file[["wd_path"]],
+                            "\\data\\FDI2021-codes.xlsx")
+path_templates_directory <- paste0(configuration_file[["wd_path"]],
+                                   "\\data\\FDI2021-templates")
+fao_area <- rgdal::readOGR(dsn = system.file("fao_area",
+                                             "FAO_AREAS.shp",
+                                             package = "furdeb"),
+                           verbose = FALSE)
+tables_ouput <- list()
+```
+
+```{r databases connections}
+t3_con <- postgresql_db_connection(db_user = configuration_file[["databases_configuration"]][["t3_prod_vmot7"]][["login"]],
+                                   db_password = configuration_file[["databases_configuration"]][["t3_prod_vmot7"]][["password"]],
+                                   db_dbname = configuration_file[["databases_configuration"]][["t3_prod_vmot7"]][["dbname"]],
+                                   db_host = configuration_file[["databases_configuration"]][["t3_prod_vmot7"]][["host"]],
+                                   db_port = configuration_file[["databases_configuration"]][["t3_prod_vmot7"]][["port"]])
+
+balbaya_con <- postgresql_db_connection(db_user = configuration_file[["databases_configuration"]][["balbaya_vmot5"]][["login"]],
+                                        db_password = configuration_file[["databases_configuration"]][["balbaya_vmot5"]][["password"]],
+                                        db_dbname = configuration_file[["databases_configuration"]][["balbaya_vmot5"]][["dbname"]],
+                                        db_host = configuration_file[["databases_configuration"]][["balbaya_vmot5"]][["host"]],
+                                        db_port = configuration_file[["databases_configuration"]][["balbaya_vmot5"]][["port"]])
+
+sardara_con <- postgresql_db_connection(db_user = configuration_file[["databases_configuration"]][["sardara_vmot5"]][["login"]],
+                                        db_password = configuration_file[["databases_configuration"]][["sardara_vmot5"]][["password"]],
+                                        db_dbname = configuration_file[["databases_configuration"]][["sardara_vmot5"]][["dbname"]],
+                                        db_host = configuration_file[["databases_configuration"]][["sardara_vmot5"]][["host"]],
+                                        db_port = configuration_file[["databases_configuration"]][["sardara_vmot5"]][["port"]])
+```
+
+```{r referentials import}
+referentials <- list(country = read_xlsx(path = path_referentials,
+                                         sheet = "COUNTRY"),
+                     year = read_xlsx(path = path_referentials,
+                                      sheet = "YEAR"),
+                     quarter = read_xlsx(path = path_referentials,
+                                         sheet = "QUARTER"),
+                     vessel_length = read_xlsx(path = path_referentials,
+                                               sheet = "VESSEL_LENGTH",
+                                               range = "a13:b19",
+                                               col_names = c("vessel_length",
+                                                             "vessel_length_name")),
+                     fishing_tech = read_xlsx(path = path_referentials,
+                                              sheet = "FISHING_TECH",
+                                              range = "a2:b17",
+                                              col_names = c("fishing_tech",
+                                                            "fishing_tech_name")),
+                     gear_type = read_xlsx(path = path_referentials,
+                                           sheet = "GEAR_TYPE",
+                                           range = "a2:c35",
+                                           col_names = c("gear_type",
+                                                         "gear_type_name",
+                                                         "gear_type_name_bis")),
+                     target_assemblage = read_xlsx(path = path_referentials,
+                                                   sheet = "TARGET_ASSEMBLAGE",
+                                                   range = "a2:b21",
+                                                   col_names = c("target_assemblage",
+                                                                 "target_assemblage_name")),
+                     metier = read_xlsx(path = path_referentials,
+                                        sheet = "METIER",
+                                        range = "a2:a1133",
+                                        col_names = "metier"),
+                     supra_region = read_xlsx(path = path_referentials,
+                                              sheet = "SUPRA_REGION",
+                                              range = "a2:b4",
+                                              col_names = c("supra_region",
+                                                            "supra_region_name")),
+                     sub_region = read_xlsx(path = path_referentials,
+                                            sheet = "SUB_REGION & EEZ_INDICATOR",
+                                            range = "a2:a203",
+                                            col_names = c("sub_region")),
+                     eez_indicator = unique(read_xlsx(path = path_referentials,
+                                                      sheet = "SUB_REGION & EEZ_INDICATOR",
+                                                      range = "b2:b203",
+                                                      col_names = c("eez_indicator"))),
+                     geo_indicator = read_xlsx(path = path_referentials,
+                                               sheet = "GEO_INDICATOR",
+                                               range = "a2:b15",
+                                               col_names = c("geo_indicator",
+                                                             "geo_indicator_name")),
+                     specon_tech = read_xlsx(path = path_referentials,
+                                             sheet = "SPECON_TECH",
+                                             range = "a2:b11",
+                                             col_names = c("specon_tech",
+                                                           "specon_tech_name")))
+```
+
+```{r templates import}
+list_templates <- list.files(path = path_templates_directory)
+
+templates <- list()
+
+for (current_list_templates in list_templates) {
+  current_template <- list(names(read_xlsx(path = file.path(path_templates_directory,
+                                                            current_list_templates,
+                                                            fsep = "\\"))))
+  names(current_template) <- unlist(strsplit(current_list_templates,
+                                             "[.]"))[1]
+  templates <- append(x = templates,
+                      values = current_template)
+}
+
+rm(list_templates,
+   current_list_templates,
+   current_template)
+```
+
+## Table A: Catch summary
+
+```{r table A}
+# landing data import and design ----
+balbaya_landing_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                         "balbaya_landing_fdi.sql",
+                                                         fsep = "\\")),
+                               collapse = '\n')
+
+balbaya_landing_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                             sql = balbaya_landing_query,
+                                             periode = DBI::SQL(paste0(periode,
+                                                                       collapse = ", ")),
+                                             flag = DBI::SQL(paste0(flag,
+                                                                    collapse = ", ")),
+                                             gear = DBI::SQL(paste0(gear,
+                                                                    collapse = ", ")))
+
+balbaya_landing <- dbGetQuery(conn = balbaya_con,
+                              statement = balbaya_landing_query)
+
+balbaya_landing <- marine_area_overlay(data = balbaya_landing,
+                                       overlay_level = "division",
+                                       longitude_name = "longitude",
+                                       latitude_name = "latitude",
+                                       tolerance = 10,
+                                       silent = TRUE)
+
+balbaya_landing_fao_area <- unique(balbaya_landing[, c("f_area_mao",
+                                                       "f_subarea_mao",
+                                                       "f_division_mao")]) %>%
+  arrange(f_area_mao,
+          f_subarea_mao,
+          f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "34",
+                             yes = ifelse(test = f_subarea_mao == "34.2",
+                                          yes = "34.2.0",
+                                          no = f_division_mao),
+                             no = ifelse(test = f_area_mao %in% c("41",
+                                                                  "47",
+                                                                  "51",
+                                                                  "57"),
+                                         yes = f_subarea_mao,
+                                         no = "sub_region_not_defined")),
+         eez_indicator = ifelse(test = sub_region %in% c("34.1.1",
+                                                         "34.1.2",
+                                                         "34.1.3",
+                                                         "34.2.0"),
+                                yes = "COAST",
+                                no = "NA"))
+
+balbaya_landing <- balbaya_landing %>%
+  inner_join(balbaya_landing_fao_area, by = c("f_area_mao",
+                                              "f_subarea_mao",
+                                              "f_division_mao"))
+
+if (dim(as.data.frame(balbaya_landing[is.na(balbaya_landing$sub_region),]))[1] != 0) {
+  stop("You have NA(s) value(s)\nChecking data")
+} else {
+  if ("eez_not_defined" %in% unique(balbaya_landing$eez_indicator)) {
+    stop("You have at least one eez not defined\nChecking data and code above")
+  }
+}
+
+balbaya_landing <-  mutate(.data = balbaya_landing,
+                           vessel_length = case_when(vessel_length < 10 ~ "VL0010",
+                                                     vessel_length >= 10 & vessel_length < 12 ~ "VL1012",
+                                                     vessel_length >= 12 & vessel_length < 18 ~ "VL1218",
+                                                     vessel_length >= 18 & vessel_length < 24 ~ "VL1824",
+                                                     vessel_length >= 24 & vessel_length < 40 ~ "VL2440",
+                                                     vessel_length >= 40 ~ "VL40XX",
+                                                     TRUE ~ "NK"),
+                           fishing_tech = case_when(engin == 1 ~ "PS",
+                                                    engin %in% c(2, 3) ~ "HOK",
+                                                    TRUE ~ "error"),
+                           gear_type = case_when(engin == 1 ~ "PS",
+                                                 engin == 2 ~ "LHP",
+                                                 engin == 3 ~ "LLD",
+                                                 TRUE ~ "error"),
+                           target_assemblage = "LPF",
+                           mesh_size_range = case_when(engin == 1 ~ "NK",
+                                                       engin %in% c(2, 3) ~ "NA",
+                                                       TRUE ~ "error"),
+                           metier = paste(gear_type,
+                                          target_assemblage,
+                                          "0",
+                                          "0",
+                                          "0",
+                                          sep = "_"),
+                           domain_landings = paste(country,
+                                                   quarter,
+                                                   sub_region,
+                                                   paste(gear_type,
+                                                         case_when(fishing_mode == 1 ~ "FOB",
+                                                                   fishing_mode == 2 ~ "FSC",
+                                                                   fishing_mode == 3 ~ "UNK",
+                                                                   TRUE ~ "error"),
+                                                         sep = "-"),
+                                                   target_assemblage,
+                                                   "NA",
+                                                   "NA",
+                                                   "NA",
+                                                   vessel_length,
+                                                   species,
+                                                   "NA",
+                                                   sep = "_"),
+                           supra_region = "OFR",
+                           geo_indicator = "IWE",
+                           specon_tech = "NA",
+                           deep = "NA",
+                           totvallandg = "NK") %>%
+  rowwise() %>%
+  mutate(nep_sub_region = ifelse(test = unlist(strsplit(x = sub_region,
+                                                        split = "[.]"))[[1]] == "27",
+                                 yes = "error",
+                                 no = "NA"))
+
+balbaya_landing_rectangle <- balbaya_landing
+
+balbaya_landing <- balbaya_landing %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           fishing_mode,
+           domain_landings,
+           supra_region,
+           sub_region,
+           eez_indicator,
+           geo_indicator,
+           nep_sub_region,
+           specon_tech,
+           deep,
+           species) %>%
+  summarise(totwghtlandg = sum(totwghtlandg),
+            .groups = "drop")
+
+# observers data import  and design ----
+observe_bycatch <- NULL
+for (file_name in list.files(path = file.path(configuration_file[["wd_path"]],
+                                              "data\\by_catch", fsep = "\\"))) {
+  observe_bycatch <- rbind(observe_bycatch,
+                           read.csv2(file.path(configuration_file[["wd_path"]],
+                                               "data\\by_catch",
+                                               file_name,
+                                               fsep = "\\"),
+                                     stringsAsFactors = FALSE))
+}
+rm(file_name)
+
+observe_bycatch <- observe_bycatch %>%
+  mutate(cwp11 = as.character(cwp11)) %>%
+  left_join(furdeb::lat_lon_cwp_manipulation(manipulation_process = "cwp_to_lat_lon",
+                                             data_cwp = as.character(observe_bycatch$cwp11),
+                                             output_degree_format = "decimal_degree",
+                                             output_degree_cwp_parameter = "centroid",
+                                             cwp_resolution = "1deg_x_1deg"),
+            by = c("cwp11" = "cwp")) %>%
+  mutate(longitude_decimal_degree_centroid = as.numeric(longitude_decimal_degree_centroid),
+         latitude_decimal_degree_centroid = as.numeric(latitude_decimal_degree_centroid))
+
+observe_bycatch <- marine_area_overlay(data = observe_bycatch,
+                                       overlay_level = "division",
+                                       longitude_name = "longitude_decimal_degree_centroid",
+                                       latitude_name = "latitude_decimal_degree_centroid",
+                                       tolerance = 5,
+                                       silent = TRUE)
+
+if (dim(as.data.frame(observe_bycatch[observe_bycatch$f_subarea_mao == "far_away", ]))[1] != 0) {
+  stop("You have NA(s) value(s)", "\n", "Checking data")
+}
+
+observe_bycatch_fao_area <- unique(observe_bycatch[, c("f_area_mao",
+                                                       "f_subarea_mao",
+                                                       "f_division_mao")]) %>%
+  arrange(f_area_mao,
+          f_subarea_mao,
+          f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "27",
+                             yes = f_division_mao,
+                             no = ifelse(test = f_area_mao == "34",
+                                         yes = ifelse(test = f_subarea_mao == "34.2",
+                                                      yes = "34.2.0",
+                                                      no = f_division_mao),
+                                         no = ifelse(test = f_area_mao %in% c("41",
+                                                                              "47",
+                                                                              "51",
+                                                                              "57"),
+                                                     yes = f_subarea_mao,
+                                                     no = "sub_region_not_defined"))),
+         eez_indicator = ifelse(test = sub_region %in% c("34.1.1",
+                                                         "34.1.2",
+                                                         "34.1.3",
+                                                         "34.2.0"),
+                                yes = "COAST",
+                                no = ifelse(test = sub_region %in% c("27.8.d", "27.8.e", "27.9.b", "27.10.a"),
+                                            yes = "EU",
+                                            no = "NA")))
+
+observe_bycatch <- observe_bycatch %>%
+  inner_join(observe_bycatch_fao_area, by = c("f_area_mao", "f_subarea_mao", "f_division_mao")) %>%
+  mutate(country = "FRA",
+         vessel_length = "VL40XX",
+         fishing_tech = "PS",
+         gear_type = "PS",
+         target_assemblage = "LPF",
+         mesh_size_range = "NK",
+         metier = "PS_LPF_0_0_0",
+         supra_region = "OFR",
+         geo_indicator = "IWE",
+         nep_sub_region = "NA",
+         specon_tech = "NA",
+         deep = "NA",
+         species = as.character(fao_code),
+         retained_tons = ifelse(is.na(retained_tons),
+                                0,
+                                retained_tons),
+         domain_discards = paste(country,
+                                 quarter,
+                                 sub_region,
+                                 paste("PS",
+                                       school_type,
+                                       sep = "-"),
+                                 "LPF",
+                                 "NA",
+                                 "NA",
+                                 "NA",
+                                 vessel_length,
+                                 species,
+                                 "NA",
+                                 sep = "_"))
+
+observe_bycatch_retained <- observe_bycatch[observe_bycatch$retained_tons != 0, ]
+
+observe_bycatch <- select(.data = observe_bycatch,
+                          -cwp11,
+                          -latitude_decimal_degree_centroid,
+                          -longitude_decimal_degree_centroid,
+                          -f_area_mao,
+                          -f_subarea_mao,
+                          -f_division_mao,
+                          -fao_code) %>%
+  rename("discards" = discarded_tons) %>%
+  mutate(fishing_mode = as.character(school_type)) %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           fishing_mode,
+           domain_discards,
+           supra_region,
+           sub_region,
+           eez_indicator,
+           geo_indicator,
+           nep_sub_region,
+           specon_tech,
+           deep,
+           species) %>%
+  summarise(retained_tons = sum(retained_tons),
+            discards = sum(discards),
+            .groups = "drop")
+
+observe_bycatch <- observe_bycatch[! (observe_bycatch$retained_tons == 0
+                                      & observe_bycatch$discards == 0), ]
+
+# final design ----
+tablea_final <- balbaya_landing %>%
+  full_join(observe_bycatch, by = c("country",
+                                    "year",
+                                    "quarter",
+                                    "vessel_length",
+                                    "fishing_tech",
+                                    "gear_type",
+                                    "target_assemblage",
+                                    "mesh_size_range",
+                                    "metier",
+                                    "fishing_mode",
+                                    "supra_region",
+                                    "sub_region",
+                                    "eez_indicator",
+                                    "geo_indicator",
+                                    "nep_sub_region",
+                                    "specon_tech",
+                                    "deep",
+                                    "species")) %>%
+  mutate(discards = ifelse(test = fishing_tech == "HOK",
+                           yes = "NK",
+                           no = ifelse(test = is.na(discards),
+                                       yes = 0,
+                                       no = round(x = discards,
+                                                  digits = 3))),
+         retained_tons = ifelse(test = is.na(retained_tons),
+                                yes = 0,
+                                no = retained_tons),
+         totwghtlandg = ifelse(test = is.na(totwghtlandg),
+                               yes = 0,
+                               no = totwghtlandg),
+         totwghtlandg = round(x = totwghtlandg + retained_tons,
+                              digits = 3),
+         domain_landings = ifelse(test = is.na(domain_landings),
+                                  yes = domain_discards,
+                                  no = domain_landings),
+         domain_discards = ifelse(test = discards == 0,
+                                  yes = domain_landings,
+                                  no = ifelse(test = discards == "NK",
+                                              yes = "NK",
+                                              no = domain_discards)),
+         confidential = ifelse(test = fishing_tech == "HOK",
+                               yes = "A",
+                               no = "N"),
+         totvallandg = ifelse(test = totwghtlandg == 0,
+                              yes = 0,
+                              no = "NK")) %>%
+  select(country,
+         year,
+         quarter,
+         vessel_length,
+         fishing_tech,
+         gear_type,
+         target_assemblage,
+         mesh_size_range,
+         metier,
+         domain_discards,
+         domain_landings,
+         supra_region,
+         sub_region,
+         eez_indicator,
+         geo_indicator,
+         nep_sub_region,
+         specon_tech,
+         deep,
+         species,
+         totwghtlandg,
+         totvallandg,
+         discards,
+         confidential)
+
+names(tablea_final) <- toupper(names(tablea_final))
+
+tables_ouput <- append(tables_ouput,
+                       list(tablea_final))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[1]
+
+```
+
+```{r table A run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table A generation\n",
+    sep = "")
+```
+
+## Table D: Discards length data
+
+```{r table D}
+observer_discard <- NULL
+for (file_name in list.files(path = file.path(configuration_file[["wd_path"]],
+                                              "data\\discards",
+                                              fsep = "\\"))) {
+  observer_discard <- rbind(observer_discard,
+                            read.csv2(file.path(configuration_file[["wd_path"]],
+                                                "data\\discards",
+                                                file_name, 
+                                                fsep = "\\"),
+                                      stringsAsFactors = FALSE))
+}
+rm(file_name)
+
+observer_discard$nep_sub_region <- "NA"
+
+tabled_final <- observer_discard %>%
+  select(-totwghtlandg,
+         -discards) %>%
+  inner_join(tablea_final[, c("COUNTRY",
+                              "YEAR",
+                              "DOMAIN_DISCARDS",
+                              "NEP_SUB_REGION", "SPECIES",
+                              "TOTWGHTLANDG",
+                              "DISCARDS")],
+             by = c("country" = "COUNTRY",
+                    "year" = "YEAR",
+                    "domain_discards" = "DOMAIN_DISCARDS",
+                    "nep_sub_region" = "NEP_SUB_REGION",
+                    "species" = "SPECIES")) %>%
+  select(country,
+         year,
+         domain_discards,
+         nep_sub_region,
+         species,
+         TOTWGHTLANDG,
+         DISCARDS,
+         no_samples,
+         no_length_measurements,
+         length_unit,
+         min_length,
+         max_length,
+         length,
+         no_length,
+         mean_weight_at_length,
+         weight_unit)
+
+names(tabled_final) <- toupper(names(tabled_final))
+
+tables_ouput <- append(tables_ouput,
+                       list(tabled_final))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[4]
+```
+
+
+```{r table D run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table D generation\n",
+    sep = "")
+```
+
+## Table F: Landings length data
+
+```{r table F}
+# By-catch retained data from table A ----
+observe_bycatch_retained_tabled <- observe_bycatch_retained %>%
+  group_by(country,
+           year,
+           quarter,
+           sub_region,
+           nep_sub_region,
+           metier,
+           school_type,
+           vessel_length,
+           species) %>%
+  summarise(retained_tons = sum(retained_tons),
+            .groups = "drop") %>%
+  rename("fishing_mode" = school_type) %>%
+  mutate(fishing_mode = as.character(fishing_mode))
+
+# Landings ----
+balbaya_landing_cwp_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                             "balbaya_landing_cwp_fdi.sql",
+                                                             fsep = "\\")),
+                                   collapse = '\n')
+
+balbaya_landing_cwp_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                                 sql = balbaya_landing_cwp_query,
+                                                 periode = DBI::SQL(paste0(periode,
+                                                                           collapse = ", ")),
+                                                 flag = DBI::SQL(paste0(flag,
+                                                                        collapse = ", ")),
+                                                 gear = DBI::SQL(paste0(gear,
+                                                                        collapse = ", ")))
+
+balbaya_landing_cwp <- dbGetQuery(conn = balbaya_con,
+                                  statement = balbaya_landing_cwp_query)
+
+# code to indicate size of quadrangle of 5° by 5°
+balbaya_landing_cwp <- mutate(.data = balbaya_landing_cwp,
+                              cwp = paste0("6",
+                                           cwp),
+                              fishing_mode = case_when(fishing_mode == 1 ~ "FOB",
+                                                       fishing_mode == 2 ~ "FSC",
+                                                       fishing_mode == 3 ~ "UNK",
+                                                       TRUE ~ "error"),
+                              vessel_length = case_when(vessel_length < 10 ~ "VL0010",
+                                                        vessel_length >= 10 & vessel_length < 12 ~ "VL1012",
+                                                        vessel_length >= 12 & vessel_length < 18 ~ "VL1218",
+                                                        vessel_length >= 18 & vessel_length < 24 ~ "VL1824",
+                                                        vessel_length >= 24 & vessel_length < 40 ~ "VL2440",
+                                                        vessel_length >= 40 ~ "VL40XX",
+                                                        TRUE ~ "NK"))
+
+balbaya_landing_cwp <- balbaya_landing_cwp %>%
+  left_join(lat_lon_cwp_manipulation(manipulation_process = "cwp_to_lat_lon",
+                                     data_cwp = as.character(balbaya_landing_cwp$cwp),
+                                     output_degree_format = "decimal_degree",
+                                     output_degree_cwp_parameter = "centroid",
+                                     cwp_resolution = "5deg_x_5deg"),
+            by = "cwp") %>%
+  mutate(longitude_decimal_degree_centroid = as.numeric(longitude_decimal_degree_centroid),
+         latitude_decimal_degree_centroid = as.numeric(latitude_decimal_degree_centroid))
+
+balbaya_landing_cwp <- marine_area_overlay(data = balbaya_landing_cwp,
+                                           overlay_level = "division",
+                                           longitude_name = "longitude_decimal_degree_centroid",
+                                           latitude_name = "latitude_decimal_degree_centroid",
+                                           tolerance = 250,
+                                           silent = TRUE)
+
+balbaya_landing_cwp_fao_area <- unique(balbaya_landing_cwp[, c("f_area_mao",
+                                                               "f_subarea_mao",
+                                                               "f_division_mao")]) %>%
+  arrange(f_area_mao,
+          f_subarea_mao,
+          f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "34",
+                             yes = ifelse(test = f_subarea_mao == "34.2",
+                                          yes = "34.2.0",
+                                          no = f_division_mao),
+                             no = ifelse(test = f_area_mao %in% c("41",
+                                                                  "47",
+                                                                  "51",
+                                                                  "57"),
+                                         yes = f_subarea_mao,
+                                         no = "sub_region_not_defined"))) %>%
+  rowwise() %>%
+  mutate(nep_sub_region = ifelse(test = unlist(strsplit(x = sub_region,
+                                                        split = "[.]"))[[1]] == "27",
+                                 yes = "error",
+                                 no = "NA"))
+
+balbaya_landing_cwp <- balbaya_landing_cwp %>%
+  inner_join(balbaya_landing_cwp_fao_area, by = c("f_area_mao",
+                                                  "f_subarea_mao",
+                                                  "f_division_mao")) %>%
+  mutate(metier = paste(case_when(engin == 1 ~ "PS",
+                                  engin == 2 ~ "LHP",
+                                  engin == 3 ~ "LLD",
+                                  TRUE ~ "error"),
+                        "LPF",
+                        "0",
+                        "0",
+                        "0",
+                        sep = "_")) %>%
+  group_by(country,
+           year,
+           quarter,
+           sub_region,
+           nep_sub_region,
+           metier,
+           fishing_mode,
+           vessel_length,
+           species) %>%
+  summarise(totwghtlandg = sum(totwghtlandg),
+            .groups = "drop")
+
+balbaya_landing_tablef <- balbaya_landing_cwp %>%
+  full_join(observe_bycatch_retained_tabled, by = c("country",
+                                                    "year",
+                                                    "quarter",
+                                                    "sub_region",
+                                                    "nep_sub_region",
+                                                    "metier",
+                                                    "fishing_mode",
+                                                    "vessel_length",
+                                                    "species")) %>%
+  mutate(totwghtlandg = ifelse(test = is.na(totwghtlandg),
+                               yes = 0,
+                               no = totwghtlandg),
+         retained_tons = ifelse(test = is.na(retained_tons),
+                                yes = 0,
+                                no = retained_tons),
+         totwghtlandg = round(x = totwghtlandg + retained_tons,
+                              digits = 3)) %>%
+  rowwise() %>%
+  mutate(domain_landings = paste(country,
+                                 quarter,
+                                 sub_region,
+                                 paste(unlist(x = strsplit(x = metier,
+                                                           split = "_"))[1],
+                                       fishing_mode,
+                                       sep = "-"),
+                                 "LPF",
+                                 "NA",
+                                 "NA",
+                                 "NA",
+                                 vessel_length,
+                                 species,
+                                 "NA",
+                                 sep = "_"),
+         no_samples = 1) %>%
+  select(-quarter,
+         -sub_region,
+         -nep_sub_region,
+         -metier,
+         -fishing_mode,
+         -vessel_length,
+         -retained_tons)
+
+# CAS from sardara ----
+sardara_cas_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                     "sardara_cas_fdi.sql",
+                                                     fsep = "\\")),
+                           collapse = '\n')
+
+
+sardara_cas_query <- DBI::sqlInterpolate(conn = sardara_con,
+                                         sql = sardara_cas_query,
+                                         periode = DBI::SQL(paste0(periode,
+                                                                   collapse = ", ")),
+                                         flag = DBI::SQL(paste0(flag,
+                                                                collapse = ", ")),
+                                         gear = DBI::SQL(paste0(gear,
+                                                                collapse = ", ")))
+
+sardara_cas <- dbGetQuery(conn = sardara_con,
+                          statement = sardara_cas_query)
+
+sardara_cas <- mutate(.data = sardara_cas,
+                      cwp = paste0("6",
+                                   cwp),
+                      vessel_length = case_when(gear == 1 ~ "VL2440",
+                                                gear == 2 ~ "VL40XX",
+                                                TRUE ~ "error"),
+                      metier = case_when(gear == 1 ~ "LHP_LPF_0_0_0",
+                                         gear == 2 ~ "PS_LPF_0_0_0",
+                                         gear == 3 ~ "LLD_LPF_0_0_0",
+                                         TRUE ~ "error"))
+
+sardara_cas <- sardara_cas %>%
+  left_join(lat_lon_cwp_manipulation(manipulation_process = "cwp_to_lat_lon",
+                                     data_cwp = as.character(sardara_cas$cwp),
+                                     output_degree_format = "decimal_degree",
+                                     output_degree_cwp_parameter = "centroid",
+                                     cwp_resolution = "5deg_x_5deg"),
+            by = "cwp") %>%
+  mutate(longitude_decimal_degree_centroid = as.numeric(longitude_decimal_degree_centroid),
+         latitude_decimal_degree_centroid = as.numeric(latitude_decimal_degree_centroid))
+
+sardara_cas <- marine_area_overlay(data = sardara_cas,
+                                   overlay_level = "division",
+                                   longitude_name = "longitude_decimal_degree_centroid",
+                                   latitude_name = "latitude_decimal_degree_centroid",
+                                   tolerance = 250,
+                                   silent = TRUE)
+
+if (dim(as.data.frame(sardara_cas[is.na(sardara_cas$f_area_mao),]))[1] != 0
+    || dim(as.data.frame(sardara_cas[is.na(sardara_cas$f_subarea_mao),]))[1] != 0) {
+  stop("You have NA(s) value(s)", "\n", "Checking data")
+}
+
+sardara_cas_fao_area <- unique(sardara_cas[, c("f_area_mao",
+                                               "f_subarea_mao",
+                                               "f_division_mao")]) %>%
+  arrange(f_area_mao, f_subarea_mao, f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "34",
+                             yes = ifelse(test = f_subarea_mao == "34.2",
+                                          yes = "34.2.0",
+                                          no = f_division_mao),
+                             no = ifelse(test = f_area_mao %in% c("41",
+                                                                  "47",
+                                                                  "51",
+                                                                  "57"),
+                                         yes = f_subarea_mao,
+                                         no = "sub_region_not_defined"))) %>%
+  rowwise() %>%
+  mutate(nep_sub_region = ifelse(test = unlist(strsplit(x = sub_region,
+                                                        split = "[.]"))[[1]] == "27",
+                                 yes = "error",
+                                 no = "NA"))
+
+sardara_cas <- sardara_cas %>%
+  inner_join(sardara_cas_fao_area, by = c("f_area_mao",
+                                          "f_subarea_mao",
+                                          "f_division_mao"))
+
+t3_lwr_coef_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                     "balbaya_lwr_fdi.sql",
+                                                     fsep = "\\")),
+                           collapse = '\n')
+
+t3_lwr_coef <- dbGetQuery(conn = t3_con,
+                          statement = t3_lwr_coef_query)
+
+sardara_cas <- sardara_cas %>%
+  rowwise() %>%
+  mutate(ocean_name = ifelse(test = f_area_mao %in% c("34",
+                                                      "41",
+                                                      "47"),
+                             yes = "Atlantique",
+                             no = ifelse(test = f_area_mao %in% c("51",
+                                                                  "57"),
+                                         yes = "Indien",
+                                         no = "new_fao_area")),
+         mean_weigth_at_length = t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "a"] * length ^ t3_lwr_coef[t3_lwr_coef$specie_name == species & t3_lwr_coef$ocean_name == ocean_name, "b"],
+         weight_unit = "kg") %>%
+  rowwise() %>%
+  mutate(metier_1 = str_extract(string = metier,
+                                pattern = regex(pattern = "[^_]*")),
+         metier_2 = str_c(metier_1,
+                          case_when(fishing_mode == 1 ~ "FOB",
+                                    fishing_mode == 2 ~ "FSC",
+                                    fishing_mode == 3 ~ "UNK",
+                                    TRUE ~ "error"),
+                          sep="-"),
+         metier_3 = str_c(metier_2,
+                          "LPF",
+                          "NA",
+                          "NA",
+                          "NA",
+                          sep="_"),
+         domain_landings = str_c(country,
+                                 quarter,
+                                 sub_region,
+                                 metier_3,
+                                 vessel_length,
+                                 species,
+                                 "NA",
+                                 sep = "_"))
+
+sardara_cas <- sardara_cas %>%
+  group_by(country,
+           year,
+           domain_landings,
+           nep_sub_region,
+           species,
+           length,
+           mean_weigth_at_length,
+           weight_unit) %>%
+  summarise(no_length = sum(no_length),
+            .groups = "drop") %>%
+  group_by(country,
+           year,
+           domain_landings,
+           nep_sub_region,
+           species) %>%
+  mutate(min_length = min(length),
+         max_length = max(length),
+         no_length_measurements = n()) %>%
+  ungroup()
+
+# merge for final table ----
+tablef_final <- balbaya_landing_tablef %>%
+  inner_join(sardara_cas, by = c("country",
+                                 "year",
+                                 "species",
+                                 "domain_landings")) %>%
+  mutate(length_unit = "cm") %>%
+  select(country,
+         year,
+         domain_landings,
+         nep_sub_region,
+         species,
+         totwghtlandg,
+         no_samples,
+         no_length_measurements,
+         length_unit,
+         min_length,
+         max_length,
+         length,
+         no_length,
+         mean_weigth_at_length,
+         weight_unit) %>%
+  mutate(id_verif = paste0(country,
+                           year,
+                           domain_landings))
+
+names(tablef_final) <- toupper(names(tablef_final))
+
+# consistency with table A ----
+cons_tablea <- setdiff(unique(tablef_final[,c("COUNTRY", "YEAR", "DOMAIN_LANDINGS")]),
+                       unique(tablea_final[,c("COUNTRY", "YEAR", "DOMAIN_LANDINGS")])) %>%
+  mutate(id_verif = paste0(COUNTRY, YEAR, DOMAIN_LANDINGS)) %>%
+  select(id_verif)
+
+cons_tablea = cons_tablea$id_verif
+
+tablef_final <- tablef_final[! tablef_final$ID_VERIF %in% cons_tablea, -ncol(x = tablef_final)]
+
+tables_ouput <- append(tables_ouput,
+                       list(tablef_final))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[6]
+
+```
+
+```{r table F run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table F generation\n",
+    sep = "")
+```
+
+## Table G: Effort summary
+
+Effort variables description:
+
+* Days at sea
+$$
+totseadays =  \frac{hrsea}{24}
+$$
+
+hrsea = hours at sea
+
+* Fishing effort (in kW-days)
+$$
+totgtdaysatsea = totseadays * enginepower * 0.73539875
+$$
+
+totseadays = days at sea
+
+enginepower = engine power
+
+1 ch = 0.73539875 kW
+
+* Fishing effort in Gross Tonnage (GT) * days at sea
+
+$$
+totgtdaysatsea = totseadays * GT 
+$$
+GT = K.V
+
+K = 0.2 + 0.02 * log10(V))
+
+V = volume in m^3^
+
+* Fishing days
+
+$$
+totfishdays = \frac{fishingtime}{dayfishingtime}
+$$
+fishingtime = fishing time
+
+dayfishingtime = duration day of fishing, 12 in the Atlantic Ocean and 13 in the Indian Ocean
+
+* Fishing effort in kW-days
+
+$$
+totkwfishdays = totfishdays * enginepower * 0.73539875
+$$
+
+totfishdays = fishing days
+
+enginepower = engine power
+
+1 ch = 0.73539875 kW
+
+* Fishing effort in GT * fishing days
+
+$$
+totgtfishdays = totfishdays * GT
+$$
+totfishdays = fishing days
+
+GT = K.V
+
+K = 0.2 + 0.02 * log10(V))
+
+V = volume in m^3^
+
+* KW hours at sea 
+
+$$
+kwhrsea = hrsea * enginepower * 0.73539875 
+$$
+
+hrsea = hours at sea
+
+enginepower = engine power
+
+1 ch = 0.73539875 kW
+
+* GT hours at sea
+
+$$
+gthrsea = hrsea * GT
+$$
+
+hrsea = hours at sea
+
+GT = K.V
+
+K = 0.2 + 0.02 * log10(V))
+
+V = volume in m^3^
+
+```{r table G}
+balbaya_effort_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                        "balbaya_effort_fdi.sql",
+                                                        fsep = "\\")),
+                              collapse = '\n')
+
+balbaya_effort_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                            sql = balbaya_effort_query,
+                                            periode = DBI::SQL(paste0(periode,
+                                                                      collapse = ", ")),
+                                            flag = DBI::SQL(paste0(flag,
+                                                                   collapse = ", ")),
+                                            gear = DBI::SQL(paste0(gear,
+                                                                   collapse = ", ")))
+
+balbaya_effort <- dbGetQuery(conn = balbaya_con,
+                             statement = balbaya_effort_query)
+
+balbaya_effort <- mutate(.data = balbaya_effort,
+                         vessel_length = case_when(vessel_length < 10 ~ "VL0010",
+                                                   vessel_length >= 10 & vessel_length < 12 ~ "VL1012",
+                                                   vessel_length >= 12 & vessel_length < 18 ~ "VL1218",
+                                                   vessel_length >= 18 & vessel_length < 24 ~ "VL1824",
+                                                   vessel_length >= 24 & vessel_length < 40 ~ "VL2440",
+                                                   vessel_length >= 40 ~ "VL40XX",
+                                                   TRUE ~ "NK"),
+                         fishing_tech = case_when(gear == 1 ~ "PS",
+                                                  gear %in% c(2, 3) ~ "HOK",
+                                                  TRUE ~ "error"),
+                         gear_type = case_when(gear == 1 ~ "PS",
+                                               gear == 2 ~ "LHP",
+                                               gear == 3 ~ "LLD",
+                                               TRUE ~ "error"),
+                         target_assemblage = "LPF",
+                         mesh_size_range = case_when(gear == 1 ~ "NK",
+                                                     gear %in% c(2, 3) ~ "NA",
+                                                     TRUE ~ "error"),
+                         metier = paste(gear_type,
+                                        target_assemblage,
+                                        "0",
+                                        "0",
+                                        "0",
+                                        sep = "_"),
+                         supra_region = "OFR",
+                         geo_indicator = "IWE",
+                         specon_tech = "NA",
+                         deep = "NA",
+                         totseadays = hrsea / 24,
+                         totkwdaysatsea = totseadays * engine_power * 0.73539875,
+                         totgtdaysatsea = totseadays * (0.2 + 0.02 * log(vessel_volume_m3)) * vessel_volume_m3,
+                         totfishdays = case_when(ocean == 1 ~ fishing_time / 12,
+                                                 ocean == 2 ~ fishing_time / 13),
+                         totkwfishdays = totfishdays * engine_power * 0.73539875,
+                         totgtfishdays = totfishdays * (0.2 + 0.02 * log(vessel_volume_m3)) * vessel_volume_m3,
+                         kwhrsea = hrsea * engine_power * 0.73539875,
+                         gthrsea = hrsea * (0.2 + 0.02 * log(vessel_volume_m3)) * vessel_volume_m3)
+
+balbaya_effort <- marine_area_overlay(data = balbaya_effort,
+                                      overlay_level = "division",
+                                      longitude_name = "longitude",
+                                      latitude_name = "latitude",
+                                      tolerance = 10,
+                                      silent = TRUE)
+
+balbaya_effort_fao_area <- unique(balbaya_effort[, c("f_area_mao",
+                                                     "f_subarea_mao",
+                                                     "f_division_mao")]) %>%
+  arrange(f_area_mao,
+          f_subarea_mao,
+          f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "27",
+                             yes = f_division_mao,
+                             no = ifelse(test = f_area_mao == "34",
+                                         yes = ifelse(test = f_subarea_mao == "34.2",
+                                                      yes = "34.2.0",
+                                                      no = f_division_mao),
+                                         no = ifelse(test = f_area_mao %in% c("41",
+                                                                              "47",
+                                                                              "51",
+                                                                              "57"),
+                                                     yes = f_subarea_mao,
+                                                     no = "sub_region_not_defined"))),
+         eez_indicator = ifelse(test = sub_region %in% c("34.1.1",
+                                                         "34.1.2",
+                                                         "34.1.3",
+                                                         "34.2.0"),
+                                yes = "COAST",
+                                no = ifelse(test = sub_region %in% c("27.8.d",
+                                                                     "27.8.e",
+                                                                     "27.9.b",
+                                                                     "27.10.a"),
+                                            yes = "EU",
+                                            no = "NA")))
+
+if (dim(as.data.frame(balbaya_effort[is.na(balbaya_effort$sub_region),]))[1] != 0
+    || dim(as.data.frame(balbaya_effort[is.na(balbaya_effort$eez_indicator),]))[1] != 0) {
+  stop("You have NA(s) value(s)", "\n", "Checking data")
+}
+
+balbaya_effort <- balbaya_effort %>%
+  inner_join(balbaya_effort_fao_area, by = c("f_area_mao",
+                                             "f_subarea_mao",
+                                             "f_division_mao"))
+
+balbaya_effort_rectangle <- balbaya_effort %>%
+  select(-vessel_id,
+         -totseadays,
+         -totkwdaysatsea,
+         -totgtdaysatsea,
+         -totkwfishdays,
+         -totgtfishdays,
+         -hrsea,
+         -kwhrsea,
+         -gthrsea,
+         -f_area_mao,
+         -f_subarea_mao,
+         -f_division_mao)
+
+balbaya_effort_nb_vessel <- balbaya_effort %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           supra_region,
+           sub_region,
+           eez_indicator,
+           geo_indicator,
+           specon_tech) %>%
+  summarise(totves = n_distinct(vessel_id),
+            .groups = "drop")
+
+balbaya_effort <- balbaya_effort %>%  
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           supra_region,
+           sub_region,
+           eez_indicator,
+           geo_indicator,
+           specon_tech,
+           deep) %>%
+  summarise(totseadays = sum(totseadays),
+            totkwdaysatsea = sum(totkwdaysatsea),
+            totgtdaysatsea = sum(totgtdaysatsea),
+            totfishdays = sum(totfishdays),
+            totkwfishdays = sum(totkwfishdays),
+            totgtfishdays = sum(totgtfishdays),
+            hrsea = sum(hrsea),
+            kwhrsea = sum(kwhrsea),
+            gthrsea = sum(gthrsea),
+            .groups = "drop") %>%
+  mutate(totkwdaysatsea = ifelse(is.na(totkwdaysatsea),
+                                 "NK",
+                                 totkwdaysatsea),
+         totkwfishdays = ifelse(is.na(totkwfishdays),
+                                "NK",
+                                totkwfishdays),
+         kwhrsea = ifelse(is.na(kwhrsea),
+                          "NK",
+                          kwhrsea)) %>%
+  inner_join(balbaya_effort_nb_vessel, by = c("country",
+                                              "year",
+                                              "quarter",
+                                              "vessel_length",
+                                              "fishing_tech",
+                                              "gear_type",
+                                              "target_assemblage",
+                                              "mesh_size_range",
+                                              "metier",
+                                              "supra_region",
+                                              "sub_region",
+                                              "eez_indicator",
+                                              "geo_indicator",
+                                              "specon_tech")) %>%
+  mutate(confidential = ifelse(fishing_tech == "HOK",
+                               "Y",
+                               "N"))
+
+names(balbaya_effort) <- toupper(names(balbaya_effort))
+tables_ouput <- append(tables_ouput,
+                       list(balbaya_effort))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[7]
+```
+
+```{r table G run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table G generation\n",
+    sep = "")
+```
+
+## Table H: landings by rectangle
+
+```{r Table H}
+observe_bycatch_retained_tableh <- lat_long_to_csquare(data = observe_bycatch_retained,
+                                                       grid_square = 0.5,
+                                                       latitude_name = "latitude_decimal_degree_centroid",
+                                                       longitude_name = "longitude_decimal_degree_centroid") %>%
+  select(country,
+         year,
+         quarter,
+         vessel_length,
+         fishing_tech,
+         gear_type,
+         target_assemblage,
+         mesh_size_range,
+         metier,
+         supra_region,
+         geo_indicator,
+         specon_tech,
+         deep,
+         species,
+         retained_tons,
+         eez_indicator,
+         sub_region,
+         grid_square_0.5) %>%
+  rename("c_square" = grid_square_0.5) %>%
+  mutate(rectangle_type = "NA",
+         rectangle_lat = "NA",
+         rectangle_lon = "NA") %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           supra_region,
+           geo_indicator,
+           specon_tech,
+           deep,
+           species,
+           sub_region,
+           eez_indicator,
+           c_square,
+           rectangle_type,
+           rectangle_lat,
+           rectangle_lon) %>%
+  summarise(retained_tons = sum(retained_tons),
+            .groups = "drop")
+
+balbaya_landing_rectangle <- lat_long_to_csquare(data = balbaya_landing_rectangle,
+                                                 grid_square = 0.5,
+                                                 latitude_name = "latitude",
+                                                 longitude_name = "longitude") %>%
+  mutate(rectangle_type = "NA",
+         rectangle_lat = "NA",
+         rectangle_lon = "NA") %>%
+  rename("c_square" = grid_square_0.5) %>%
+  select(-latitude, -longitude) %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           supra_region,
+           geo_indicator,
+           specon_tech,
+           deep,
+           species,
+           sub_region,
+           eez_indicator,
+           c_square,
+           rectangle_type,
+           rectangle_lat,
+           rectangle_lon) %>%
+  summarise(totwghtlandg = sum(totwghtlandg),
+            .groups = "drop")
+
+tableh_final <- balbaya_landing_rectangle %>%
+  full_join(observe_bycatch_retained_tableh, by = c("country",
+                                                    "year",
+                                                    "quarter",
+                                                    "vessel_length",
+                                                    "fishing_tech",
+                                                    "gear_type",
+                                                    "target_assemblage",
+                                                    "mesh_size_range",
+                                                    "metier",
+                                                    "supra_region",
+                                                    "geo_indicator",
+                                                    "specon_tech",
+                                                    "deep",
+                                                    "species",
+                                                    "sub_region",
+                                                    "eez_indicator",
+                                                    "c_square",
+                                                    "rectangle_type",
+                                                    "rectangle_lat",
+                                                    "rectangle_lon")) %>%
+  mutate(totwghtlandg = ifelse(is.na(totwghtlandg),
+                               0,
+                               totwghtlandg),
+         retained_tons = ifelse(is.na(retained_tons),
+                                0,
+                                retained_tons),
+         totwghtlandg = round(totwghtlandg + retained_tons, 3),
+         totvallandg = "NK",
+         confidential = ifelse(fishing_tech == "HOK",
+                               "A",
+                               "N")) %>%
+  select(country,
+         year,
+         quarter,
+         vessel_length,
+         fishing_tech,
+         gear_type,
+         target_assemblage,
+         mesh_size_range,
+         metier,
+         supra_region,
+         sub_region,
+         eez_indicator,
+         geo_indicator,
+         specon_tech,
+         deep,
+         rectangle_type,
+         rectangle_lat,
+         rectangle_lon,
+         c_square,
+         species,
+         totwghtlandg,
+         totvallandg,
+         confidential)
+
+names(tableh_final) <- toupper(names(tableh_final))
+tables_ouput <- append(tables_ouput,
+                       list(tableh_final))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[8]
+```
+
+```{r table H run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table H generation\n",
+    sep = "")
+```
+
+## Table I: Effort by rectangle
+
+```{r Table I}
+balbaya_effort_rectangle <- lat_long_to_csquare(data = balbaya_effort_rectangle,
+                                                grid_square = 0.5,
+                                                latitude_name = "latitude",
+                                                longitude_name = "longitude") %>%
+  mutate(rectangle_type = "NA",
+         rectangle_lat = "NA",
+         rectangle_lon = "NA") %>%
+  rename("c_square" = grid_square_0.5) %>%
+  select(-latitude, -longitude) %>%
+  group_by(country,
+           year,
+           quarter,
+           vessel_length,
+           fishing_tech,
+           gear_type,
+           target_assemblage,
+           mesh_size_range,
+           metier,
+           supra_region,
+           geo_indicator,
+           specon_tech,
+           deep,
+           sub_region,
+           eez_indicator,
+           c_square,
+           rectangle_type,
+           rectangle_lat,
+           rectangle_lon) %>%
+  summarise(totfishdays = sum(totfishdays),
+            .groups = "drop") %>%
+  select(country,
+         year,
+         quarter,
+         vessel_length,
+         fishing_tech,
+         gear_type,
+         target_assemblage,
+         mesh_size_range,
+         metier,
+         supra_region,
+         sub_region,
+         eez_indicator,
+         geo_indicator,
+         specon_tech,
+         deep,
+         rectangle_type,
+         rectangle_lat,
+         rectangle_lon,
+         c_square,
+         totfishdays) %>%
+  mutate(confidential = ifelse(fishing_tech == "HOK",
+                               "Y",
+                               "N"))
+
+names(balbaya_effort_rectangle) <- toupper(names(balbaya_effort_rectangle))
+tables_ouput <- append(tables_ouput,
+                       list(balbaya_effort_rectangle))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[9]
+```
+
+```{r table I run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table I generation\n",
+    sep = "")
+```
+
+## Table J: Capacity and fleet segment effort
+
+```{r Table J}
+balbaya_capacity_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                          "balbaya_capacity_fdi.sql",
+                                                          fsep = "\\")),
+                                collapse = '\n')
+
+balbaya_capacity <- dbGetQuery(conn = balbaya_con,
+                               statement = balbaya_capacity_query)
+
+balbaya_maxseadays_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                            "balbaya_maxseadays_fdi.sql",
+                                                            fsep = "\\")),
+                                  collapse = '\n')
+
+balbaya_maxseadays <- dbGetQuery(conn = balbaya_con,
+                                 statement = balbaya_maxseadays_query)
+
+balbaya_principal_sub_region <- select(.data = balbaya_effort_rectangle,
+                                       COUNTRY,
+                                       YEAR,
+                                       VESSEL_LENGTH,
+                                       FISHING_TECH,
+                                       SUPRA_REGION,
+                                       GEO_INDICATOR,
+                                       SUB_REGION,
+                                       TOTFISHDAYS) %>%
+  group_by(COUNTRY,
+           YEAR,
+           VESSEL_LENGTH,
+           FISHING_TECH,
+           SUPRA_REGION,
+           GEO_INDICATOR,
+           SUB_REGION) %>%
+  summarise(totfishdays_sub_region = sum(TOTFISHDAYS),
+            .groups = "drop") %>%
+  arrange(COUNTRY,
+          YEAR,
+          VESSEL_LENGTH,
+          FISHING_TECH,
+          SUPRA_REGION,
+          GEO_INDICATOR,
+          desc(totfishdays_sub_region)) %>%
+  group_by(COUNTRY,
+           YEAR,
+           VESSEL_LENGTH,
+           FISHING_TECH,
+           SUPRA_REGION,
+           GEO_INDICATOR) %>%
+  mutate(order_sub_region = 1:n()) %>%
+  ungroup() %>%
+  filter(order_sub_region == 1) %>%
+  rename(principal_sub_region = SUB_REGION) %>%
+  select(-totfishdays_sub_region,
+         -order_sub_region)
+
+names(balbaya_principal_sub_region) <- tolower(names(balbaya_principal_sub_region))
+
+balbaya_capacity_final <- balbaya_capacity %>%
+  inner_join(balbaya_maxseadays,
+             by = c("country",
+                    "year",
+                    "vessel_length",
+                    "fishing_tech",
+                    "supra_region",
+                    "geo_indicator")) %>%
+  inner_join(balbaya_principal_sub_region,
+             by = c("country",
+                    "year",
+                    "vessel_length",
+                    "fishing_tech",
+                    "supra_region",
+                    "geo_indicator")) %>%
+  mutate(totkw = ifelse(test = is.na(totkw),
+                        yes = "NK",
+                        no = totkw)) %>%
+  select(country,
+         year,
+         vessel_length,
+         fishing_tech,
+         supra_region,
+         geo_indicator,
+         principal_sub_region,
+         tottrips,
+         totkw,
+         totgt,
+         totves,
+         avgage,
+         avgloa,
+         maxseadays)
+
+names(balbaya_capacity_final) <- toupper(names(balbaya_capacity_final))
+tables_ouput <- append(tables_ouput,
+                       list(balbaya_capacity_final))
+
+names(tables_ouput)[length(x = tables_ouput)] <- names(templates)[10]
+```
+
+```{r table J run summary, message = TRUE}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " - Successful table J generation\n",
+    sep = "")
+```
+
+# 3 - Data call tables verification
+
+### 3.1 - Checking columns names and order with data call templates
+
+```{r Checking with data call templates, message = TRUE}
+for (current_table_id in seq_len(length.out = length(x = tables_ouput))) {
+  columns_name_table_generated <- names(tables_ouput[[current_table_id]])
+  columns_name_template <- templates[[which(names(templates) == names(tables_ouput)[current_table_id])]]
+  if ((length(x = columns_name_table_generated) != length(columns_name_template))
+      || (length(dplyr::intersect(x = columns_name_table_generated,
+                                  y = columns_name_template)) != length(x = columns_name_table_generated))
+      || (any(isFALSE(sapply(X = seq_len(length.out = length(x = columns_name_table_generated)),
+                             FUN = function(a) {
+                               columns_name_table_generated[a] == columns_name_template[a]
+                             }))))) {
+    cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " Error - column names are different from the data call template for the table ",
+        names(tables_ouput)[current_table_id],
+        "\n",
+        sep = "")
+  } else {
+    cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+        " Check passed - Column names identical from the data call table and the template for the table ",
+        names(tables_ouput)[current_table_id],
+        "\n",
+        sep = "")
+  }
+}
+```
+
+### 3.2 - Consistency of the tables with referential
+
+```{r Checking with referential, message = TRUE}
+for (current_table_id in seq_len(length.out = length(x = tables_ouput))) {
+  current_table <- tables_ouput[[current_table_id]]
+  for (current_referential_name in names(referentials)) {
+    if (toupper(current_referential_name) %in% names(current_table)) {
+      current_data <- data.frame(unique(current_table[, toupper(current_referential_name)]))
+      names(current_data) <- current_referential_name
+      current_referential_data <- data.frame(referentials[[current_referential_name]][1])
+      if (nrow(dplyr::setdiff(x = current_data,
+                              y = current_referential_data)) != 0) {
+        stop(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+             " Error - at least one modality no present in the data call referential for the variable \"",
+             current_referential_name, 
+             "\" in the table \"",
+             names(tables_ouput)[current_table_id],
+             "\"\n",
+             sep = "")
+      }
+    }
+  }
+}
+cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    " Check passed - data modalities are consistent with data call referentials\n",
+    sep = "")
+```
+
+### 3.4 - Consistency between the tables
+
+#### 3.4.1 - Total landings
+
+```{r Total landings, results = "markup"}
+check_landing_tablea <- tablea_final %>%
+  group_by(COUNTRY,
+           YEAR) %>%
+  summarise(totwghtlandg_tablea = sum(TOTWGHTLANDG),
+            .groups = "drop")
+
+check_landing_tablef <- unique(tablef_final[, c("COUNTRY",
+                                                "YEAR",
+                                                "DOMAIN_LANDINGS",
+                                                "TOTWGHTLANDG")]) %>%
+  group_by(COUNTRY, YEAR) %>%
+  summarise(totwghtlandg_tablef = sum(TOTWGHTLANDG),
+            .groups = "drop") 
+
+check_landing_tableh <- tableh_final %>%
+  group_by(COUNTRY,
+           YEAR) %>%
+  summarise(totwghtlandg_tableh = sum(TOTWGHTLANDG),
+            .groups = "drop")
+
+check_landing <- check_landing_tablea %>%
+  full_join(check_landing_tablef, by = c("COUNTRY",
+                                         "YEAR")) %>%
+  full_join(check_landing_tableh, by = c("COUNTRY",
+                                         "YEAR"))
+
+check_landing
+```
+
+#### 3.4.2 - Total discards
+
+```{r Total discards, results = "markup"}
+check_discard_tablea <- tablea_final %>%
+  mutate(DISCARDS = ifelse(DISCARDS == "NK",
+                           NA,
+                           DISCARDS),
+         DISCARDS = as.numeric(DISCARDS)) %>%
+  group_by(COUNTRY,
+           YEAR) %>%
+  summarise(discard_tablea = sum(DISCARDS, na.rm = TRUE),
+            .groups = "drop") 
+
+check_observe_bycatch <- observe_bycatch %>%
+  group_by(country,
+           year) %>%
+  summarise(discard_observe_bycatch = sum(discards),
+            .groups = "drop")
+
+check_discard_tabled <- unique(tabled_final[, c("COUNTRY",
+                                                "YEAR",
+                                                "DOMAIN_DISCARDS",
+                                                "DISCARDS")]) %>%
+  mutate(DISCARDS = as.numeric(DISCARDS)) %>%
+  group_by(COUNTRY, YEAR) %>%
+  summarise(discard_tabled = sum(DISCARDS),
+            .groups = "drop")
+
+check_discards <- check_discard_tablea %>%
+  full_join(check_observe_bycatch, by = c("COUNTRY" = "country",
+                                          "YEAR" = "year")) %>%
+  full_join(check_discard_tabled, by = c("COUNTRY",
+                                         "YEAR"))
+check_discards
+```
+
+#### 3.4.3 - Effort
+
+```{r effort check, results = "markup"}
+check_effort_tableg <- balbaya_effort %>%
+  group_by(COUNTRY,
+           YEAR,
+           FISHING_TECH) %>%
+  summarise(totfishdays = sum(TOTFISHDAYS),
+            .groups = "drop")
+
+check_effort_tablei <- balbaya_effort_rectangle %>%
+  group_by(COUNTRY,
+           YEAR,
+           FISHING_TECH) %>%
+  summarise(totfishdays = sum(TOTFISHDAYS),
+            .groups = "drop")
+
+check_effort <- check_effort_tableg %>%
+  full_join(check_effort_tablei, by = c("COUNTRY",
+                                        "YEAR",
+                                        "FISHING_TECH"))
+
+check_effort
+```
+
+# 4. - Data call tables export
+
+```{r Tables export, message = TRUE}
+for (current_table in seq_len(length.out = length(x = tables_ouput))) {
+  openxlsx::write.xlsx(x = as.data.frame(tables_ouput[[current_table]]),
+                       file = file.path(configuration_file[["output_path"]],
+                                        paste0(names(tables_ouput)[current_table],
+                                               "_IRD_",
+                                               format(as.POSIXct(Sys.time()),
+                                                      "%Y%m%d_%H%M%S"),
+                                               ".xlsx"),
+                                        fsep = "\\"),
+                       sheetName = stringr::str_extract(string = names(tables_ouput)[current_table],
+                                               pattern = stringr::regex(pattern = "TABLE_[^_]*")))
+  # write.csv2(x = as.data.frame(tables_ouput[[current_table]]),
+  #            file = file.path(configuration_file[["output_path"]],
+  #                             paste0(names(tables_ouput)[current_table],
+  #                                    "_IRD_",
+  #                                    format(as.POSIXct(Sys.time()),
+  #                                           "%Y%m%d_%H%M%S"),
+  #                                    ".csv"),
+  #                             fsep = "\\"),
+  #            row.names = FALSE)
+  cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+      " - Successful export of table \"",
+      names(tables_ouput)[current_table],
+      "\" in the directory \"",
+      configuration_file[["output_path"]],
+      "\"\n",
+      sep = "")
+}
+```
+
