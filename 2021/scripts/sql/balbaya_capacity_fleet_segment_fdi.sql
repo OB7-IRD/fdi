@@ -1,29 +1,17 @@
-WITH balbaya_maxseadays AS 
-(SELECT
+SELECT 
 	sub1.country
 	,sub1.year
 	,sub1.vessel_length
 	,sub1.fishing_tech
 	,sub1.supra_region
 	,sub1.geo_indicator
-	,sub1.vessel_id
-	,sub1.totseadays
-	,rank()
-OVER 
-(PARTITION BY
-	country
-	,year
-	,vessel_length
-	,fishing_tech
-	,supra_region
-	,geo_indicator
-ORDER BY 
-	totseadays DESC
-)
+	,count(*) AS totves
+	,avg(vessel_age) AS avgage
+	,avg(vessel_length_m) AS avgloa
 FROM 
-(SELECT
+(SELECT DISTINCT
 	f.c_pays_fao::text AS country
-	,EXTRACT(YEAR FROM act.d_dbq)::integer AS year
+	,EXTRACT(YEAR FROM t.d_dbq)::integer AS year
 	,CASE
 		WHEN v.v_l_ht < 10 THEN 'VL0010'
 		WHEN (v.v_l_ht >= 10 AND v.v_l_ht < 12) THEN 'VL1012'
@@ -39,50 +27,22 @@ FROM
 	END::text AS fishing_tech
 	,'OFR'::text AS supra_region
 	,'IWE'::text AS geo_indicator
-	,act.c_bat AS vessel_id
-	-- Days at sea
-	,sum(act.v_tmer / 24)::numeric as totseadays
+	-- Age of vessel
+	,(EXTRACT(YEAR FROM t.d_dbq) - v.an_serv)::integer AS vessel_age
+	-- Length over all of the vessel
+	,v.v_l_ht::numeric AS vessel_length_m
 FROM
-	public.activite act
-	INNER JOIN public.bateau v ON (act.c_bat=v.c_bat)
+	public.maree t
+	INNER JOIN public.bateau v ON (t.c_bat=v.c_bat)
 	INNER JOIN public.pavillon f ON (f.c_pav_b=v.c_pav_b)
 	INNER JOIN public.type_bateau vt ON (v.c_typ_b=vt.c_typ_b)
 	INNER JOIN public.engin g ON (vt.c_engin=g.c_engin)
 WHERE
-	EXTRACT(YEAR FROM act.d_dbq) IN (?periode)
+	EXTRACT(YEAR FROM t.d_dbq) IN (?periode)
 	AND v.c_pav_b IN (?flag)
 	AND g.c_engin IN (?gear)
-GROUP BY
-	country
-	,year
-	,vessel_length
-	,fishing_tech
-	,supra_region
-	,geo_indicator
-	,vessel_id) AS sub1),
-balbaya_maxseadays_f AS 
-(SELECT
-	msd.country
-	,msd.year
-	,msd.vessel_length
-	,msd.fishing_tech
-	,msd.supra_region
-	,msd.geo_indicator
-	,msd.totseadays
-FROM
-	balbaya_maxseadays msd
-WHERE
-	msd.rank <= 10)
-SELECT
-	msdf.country
-	,msdf.year
-	,msdf.vessel_length
-	,msdf.fishing_tech
-	,msdf.supra_region
-	,msdf.geo_indicator
-	,avg(msdf.totseadays)::numeric AS maxseadays
-FROM
-	balbaya_maxseadays_f msdf
+ORDER BY
+	year) AS sub1
 GROUP BY
 	country
 	,year
@@ -93,4 +53,3 @@ GROUP BY
 ORDER BY
 	year
 	,fishing_tech
-;

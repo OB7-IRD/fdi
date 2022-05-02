@@ -6,8 +6,7 @@ author:
   - Philippe Sabarros^[IRD, philippe.sabarros@ird.fr]
 date: "04/06/2021"
 output: 
-  html_document: 
-    self_contained: no
+  html_document
 ---
 
 # 1 - Data call description: 2021 Fisheries Dependent Information data call
@@ -46,7 +45,7 @@ options("scipen" = 100)
 ```
 
 ```{r parameters definition}
-periode <- c(2015:2019)
+periode <- c(2014:2020)
 # 1 = PS, 2 = BB and 3 = LL
 gear <- c(1, 2, 3)
 # for the French fleet, 1 = France & 41 = Mayotte
@@ -541,7 +540,13 @@ for (file_name in list.files(path = file.path(configuration_file[["wd_path"]],
 }
 rm(file_name)
 
-observer_discard$nep_sub_region <- "NA"
+observer_discard <- observer_discard %>%
+  mutate(nep_sub_region = "NA") %>%
+  rowwise() %>%
+  mutate(mean_weight_at_length = case_when(
+    is.na(mean_weight_at_length) ~ "NK",
+    TRUE ~ as.character(mean_weight_at_length)
+  ))
 
 tabled_final <- observer_discard %>%
   select(-totwghtlandg,
@@ -549,7 +554,8 @@ tabled_final <- observer_discard %>%
   inner_join(tablea_final[, c("COUNTRY",
                               "YEAR",
                               "DOMAIN_DISCARDS",
-                              "NEP_SUB_REGION", "SPECIES",
+                              "NEP_SUB_REGION",
+                              "SPECIES",
                               "TOTWGHTLANDG",
                               "DISCARDS")],
              by = c("country" = "COUNTRY",
@@ -1099,6 +1105,9 @@ balbaya_effort <- marine_area_overlay(data = balbaya_effort,
                                       tolerance = 10,
                                       silent = TRUE)
 
+# careful, here we supress one row according to an error in our database. We have to correct that before next data call.
+balbaya_effort <- balbaya_effort[balbaya_effort$f_area_mao != "far_away",]
+
 balbaya_effort_fao_area <- unique(balbaya_effort[, c("f_area_mao",
                                                      "f_subarea_mao",
                                                      "f_division_mao")]) %>%
@@ -1463,10 +1472,36 @@ cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
 ## Table J: Capacity and fleet segment effort
 
 ```{r Table J}
+balbaya_capacity_fleet_segment_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                                        "balbaya_capacity_fleet_segment_fdi.sql",
+                                                                        fsep = "\\")),
+                                              collapse = '\n')
+
+balbaya_capacity_fleet_segment_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                                            sql = balbaya_capacity_fleet_segment_query,
+                                                            periode = DBI::SQL(paste0(periode,
+                                                                                      collapse = ", ")),
+                                                            flag = DBI::SQL(paste0(flag,
+                                                                                   collapse = ", ")),
+                                                            gear = DBI::SQL(paste0(gear,
+                                                                                   collapse = ", ")))
+
+balbaya_capacity_fleet_segment <- dbGetQuery(conn = balbaya_con,
+                                             statement = balbaya_capacity_fleet_segment_query)
+
 balbaya_capacity_query <- paste(readLines(con = file.path(path_sql_queries_directory,
                                                           "balbaya_capacity_fdi.sql",
                                                           fsep = "\\")),
                                 collapse = '\n')
+
+balbaya_capacity_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                            sql = balbaya_capacity_query,
+                                            periode = DBI::SQL(paste0(periode,
+                                                                      collapse = ", ")),
+                                            flag = DBI::SQL(paste0(flag,
+                                                                   collapse = ", ")),
+                                            gear = DBI::SQL(paste0(gear,
+                                                                   collapse = ", ")))
 
 balbaya_capacity <- dbGetQuery(conn = balbaya_con,
                                statement = balbaya_capacity_query)
@@ -1476,83 +1511,138 @@ balbaya_maxseadays_query <- paste(readLines(con = file.path(path_sql_queries_dir
                                                             fsep = "\\")),
                                   collapse = '\n')
 
+balbaya_maxseadays_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                                sql = balbaya_maxseadays_query,
+                                                periode = DBI::SQL(paste0(periode,
+                                                                          collapse = ", ")),
+                                                flag = DBI::SQL(paste0(flag,
+                                                                       collapse = ", ")),
+                                                gear = DBI::SQL(paste0(gear,
+                                                                       collapse = ", ")))
+
 balbaya_maxseadays <- dbGetQuery(conn = balbaya_con,
                                  statement = balbaya_maxseadays_query)
 
-balbaya_principal_sub_region <- select(.data = balbaya_effort_rectangle,
-                                       COUNTRY,
-                                       YEAR,
-                                       VESSEL_LENGTH,
-                                       FISHING_TECH,
-                                       SUPRA_REGION,
-                                       GEO_INDICATOR,
-                                       SUB_REGION,
-                                       TOTFISHDAYS) %>%
-  group_by(COUNTRY,
-           YEAR,
-           VESSEL_LENGTH,
-           FISHING_TECH,
-           SUPRA_REGION,
-           GEO_INDICATOR,
-           SUB_REGION) %>%
-  summarise(totfishdays_sub_region = sum(TOTFISHDAYS),
-            .groups = "drop") %>%
-  arrange(COUNTRY,
-          YEAR,
-          VESSEL_LENGTH,
-          FISHING_TECH,
-          SUPRA_REGION,
-          GEO_INDICATOR,
-          desc(totfishdays_sub_region)) %>%
-  group_by(COUNTRY,
-           YEAR,
-           VESSEL_LENGTH,
-           FISHING_TECH,
-           SUPRA_REGION,
-           GEO_INDICATOR) %>%
-  mutate(order_sub_region = 1:n()) %>%
-  ungroup() %>%
-  filter(order_sub_region == 1) %>%
-  rename(principal_sub_region = SUB_REGION) %>%
-  select(-totfishdays_sub_region,
-         -order_sub_region)
+balbaya_capacity_principal_sub_region_query <- paste(readLines(con = file.path(path_sql_queries_directory,
+                                                                               "balbaya_capacity_principal_sub_region_fdi.sql",
+                                                                               fsep = "\\")),
+                                                     collapse = '\n')
 
-names(balbaya_principal_sub_region) <- tolower(names(balbaya_principal_sub_region))
+balbaya_capacity_principal_sub_region_query <- DBI::sqlInterpolate(conn = balbaya_con,
+                                                                   sql = balbaya_capacity_principal_sub_region_query,
+                                                                   periode = DBI::SQL(paste0(periode,
+                                                                                             collapse = ", ")),
+                                                                   flag = DBI::SQL(paste0(flag,
+                                                                                          collapse = ", ")),
+                                                                   gear = DBI::SQL(paste0(gear,
+                                                                                          collapse = ", ")))
+
+balbaya_capacity_principal_sub_region <- dbGetQuery(conn = balbaya_con,
+                                                    statement = balbaya_capacity_principal_sub_region_query)
+
+
+balbaya_capacity_principal_sub_region <- marine_area_overlay(data = balbaya_capacity_principal_sub_region,
+                                                             overlay_level = "division",
+                                                             longitude_name = "longitude",
+                                                             latitude_name = "latitude",
+                                                             tolerance = 10,
+                                                             silent = TRUE)
+
+balbaya_capacity_fao_area <- unique(balbaya_capacity_principal_sub_region[, c("f_area_mao",
+                                                                              "f_subarea_mao",
+                                                                              "f_division_mao")]) %>%
+  arrange(f_area_mao,
+          f_subarea_mao,
+          f_division_mao) %>%
+  mutate(sub_region = ifelse(test = f_area_mao == "34",
+                             yes = ifelse(test = f_subarea_mao == "34.2",
+                                          yes = "34.2.0",
+                                          no = f_division_mao),
+                             no = ifelse(test = f_area_mao %in% c("41",
+                                                                  "47",
+                                                                  "51",
+                                                                  "57"),
+                                         yes = f_subarea_mao,
+                                         no = ifelse(test = f_area_mao == "27",
+                                         yes = f_division_mao,
+                                         no = "sub_region_not_defined"))))
+
+balbaya_capacity_principal_sub_region <- balbaya_capacity_principal_sub_region %>%
+  inner_join(balbaya_capacity_fao_area, by = c("f_area_mao",
+                                               "f_subarea_mao",
+                                               "f_division_mao")) %>%
+  filter(vessel_id != 760 & latitude != 25.92 & longitude  != 59.37) %>%
+  rowwise() %>%
+  mutate(fishing_day = case_when(ocean == 1 ~ fishing_time / 12,
+                                 ocean == 2 ~ fishing_time / 13)) %>%
+  group_by(country,
+           year,
+           vessel_id,
+           vessel_length,
+           sub_region) %>%
+  summarise(fishing_day = sum(fishing_day),
+            .groups = "drop") %>%
+  arrange(country,
+          year,
+          vessel_id,
+          vessel_length,
+          fishing_day)
+
+
+balbaya_capacity_principal_sub_region_final <- balbaya_capacity_principal_sub_region %>% 
+  group_by(country,
+           year,
+           vessel_id,
+           vessel_length) %>%
+  summarise(value = max(fishing_day),
+            .groups = "drop") %>%
+  inner_join(balbaya_capacity_principal_sub_region,
+             by = c("country",
+                    "year",
+                    "vessel_id",
+                    "vessel_length",
+                    "value" = "fishing_day")) %>%
+  select(-value)
+
 
 balbaya_capacity_final <- balbaya_capacity %>%
-  inner_join(balbaya_maxseadays,
+  inner_join(balbaya_capacity_principal_sub_region_final,
              by = c("country",
                     "year",
-                    "vessel_length",
-                    "fishing_tech",
-                    "supra_region",
-                    "geo_indicator")) %>%
-  inner_join(balbaya_principal_sub_region,
-             by = c("country",
-                    "year",
-                    "vessel_length",
-                    "fishing_tech",
-                    "supra_region",
-                    "geo_indicator")) %>%
+                    "vessel_id",
+                    "vessel_length")) %>%
+  group_by(country,
+           year,
+           vessel_length,
+           fishing_tech,
+           supra_region,
+           geo_indicator,
+           sub_region) %>%
+  summarise(tottrips = sum(tottrips),
+            totkw = sum(totkw),
+            totgt = sum(totgt),
+            .groups = "drop") %>%
+  left_join(balbaya_capacity_fleet_segment,
+            by = c("country",
+                   "year",
+                   "vessel_length",
+                   "fishing_tech",
+                   "supra_region",
+                   "geo_indicator")) %>%
+  left_join(balbaya_maxseadays,
+            by = c("country",
+                   "year",
+                   "vessel_length",
+                   "fishing_tech",
+                   "supra_region",
+                   "geo_indicator")) %>%
   mutate(totkw = ifelse(test = is.na(totkw),
                         yes = "NK",
                         no = totkw)) %>%
-  select(country,
-         year,
-         vessel_length,
-         fishing_tech,
-         supra_region,
-         geo_indicator,
-         principal_sub_region,
-         tottrips,
-         totkw,
-         totgt,
-         totves,
-         avgage,
-         avgloa,
-         maxseadays)
+  rename(principal_sub_region = sub_region)
 
 names(balbaya_capacity_final) <- toupper(names(balbaya_capacity_final))
+
 tables_ouput <- append(tables_ouput,
                        list(balbaya_capacity_final))
 
@@ -1580,7 +1670,7 @@ for (current_table_id in seq_len(length.out = length(x = tables_ouput))) {
                              FUN = function(a) {
                                columns_name_table_generated[a] == columns_name_template[a]
                              }))))) {
-    cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
+    stop(format(Sys.time(), "%Y-%m-%d %H:%M:%S"),
         " Error - column names are different from the data call template for the table ",
         names(tables_ouput)[current_table_id],
         "\n",
