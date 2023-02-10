@@ -28,4 +28,4 @@ More information is available on the offical data call webpage:
 
 Regarding the IRD data tables generation, informations and
 documentations are available on the R package acdc website
-(<https://ob7-ird.github.io/acdc/>).
+(<https://ob7-ird.github.io/acdc/articles/fisheries_dependent_information_data_call.html>).
